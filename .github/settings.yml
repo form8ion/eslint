@@ -1,0 +1,6 @@
+_extends: .github
+repository:
+  name: eslint
+  description: opinionated scaffolder for managing the ESLint configuration for a project
+  homepage: https://npm.im/@form8ion/eslint
+  private: false
