@@ -11,5 +11,5 @@ stubbedFs();
 (async () => {
   await scaffold({projectRoot: process.cwd()});
 
-  await lift({projectRoot: process.cwd()});
+  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react']});
 })();

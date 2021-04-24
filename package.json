@@ -52,7 +52,6 @@
     "@cucumber/cucumber": "7.1.0",
     "@form8ion/babel-preset": "1.6.54",
     "@form8ion/commitlint-config": "1.0.17",
-    "@form8ion/core": "1.4.2",
     "@form8ion/eslint-config": "1.7.11",
     "@form8ion/eslint-config-cucumber": "1.4.0",
     "@form8ion/eslint-config-mocha": "1.2.10",
@@ -67,7 +66,6 @@
     "cz-conventional-changelog": "3.3.0",
     "gherkin-lint": "4.2.1",
     "husky": "6.0.0",
-    "js-yaml": "4.1.0",
     "lockfile-lint": "4.6.2",
     "mocha": "8.3.2",
     "mock-fs": "4.13.0",
@@ -81,5 +79,10 @@
     "rollup": "2.45.2",
     "rollup-plugin-auto-external": "2.0.0",
     "sinon": "10.0.0"
+  },
+  "dependencies": {
+    "@form8ion/core": "^1.4.2",
+    "@travi/cli-messages": "^1.0.5",
+    "js-yaml": "^4.1.0"
   }
 }

@@ -9,3 +9,19 @@ Feature: ESLint Configs
     Given an existing eslint config file is present
     When the project is lifted
     Then the yaml eslint config file contains the expected config
+
+  Scenario: existing yaml config and shareable configs to add
+    Given an existing eslint config file is present
+    And additional shareable configs are provided
+    When the project is lifted
+    Then the yaml eslint config file contains the expected config
+    And the next-steps are provided
+    And dependencies are defined for the additional configs
+
+  Scenario: existing yaml config and shareable configs to add
+    Given an existing eslint config file is present
+    And complex additional shareable configs are provided
+    When the project is lifted
+    Then the yaml eslint config file contains the expected config
+    And the next-steps are provided
+    And dependencies are defined for the additional configs

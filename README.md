@@ -50,7 +50,7 @@ import {lift, scaffold} from '@form8ion/eslint';
 (async () => {
   await scaffold({projectRoot: process.cwd()});
 
-  await lift({projectRoot: process.cwd()});
+  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react']});
 })();
 ```
 
