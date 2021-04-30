@@ -2,6 +2,7 @@ import {promises as fs} from 'fs';
 import {load} from 'js-yaml';
 import {fileExists} from '@form8ion/core';
 import {warn} from '@travi/cli-messages';
+import extractScopeFrom from './scope-extractor';
 import liftConfig from './config-lifter';
 
 export default async function ({projectRoot, configs}) {
@@ -15,5 +16,5 @@ export default async function ({projectRoot, configs}) {
 
   const existingConfig = load(await fs.readFile(pathToExistingConfig, 'utf-8'));
 
-  return liftConfig({configs, scope: existingConfig.extends});
+  return liftConfig({configs, scope: extractScopeFrom(existingConfig)});
 }

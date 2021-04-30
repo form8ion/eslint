@@ -5,6 +5,7 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 import any from '@travi/any';
 import * as configLifter from './config-lifter';
+import * as scopeExtractor from './scope-extractor';
 import lift from './lifter';
 
 suite('lifter', () => {
@@ -19,6 +20,7 @@ suite('lifter', () => {
     sandbox.stub(yaml, 'load');
     sandbox.stub(core, 'fileExists');
     sandbox.stub(configLifter, 'default');
+    sandbox.stub(scopeExtractor, 'default');
   });
 
   teardown(() => sandbox.restore());
@@ -26,12 +28,14 @@ suite('lifter', () => {
   test('that the existing config is lifted', async () => {
     const results = any.simpleObject();
     const scope = any.word();
-    const existingConfig = any.string();
+    const existingYaml = any.string();
+    const existingConfig = any.simpleObject();
     const pathToConfig = `${projectRoot}/.eslintrc.yml`;
     core.fileExists.withArgs(pathToConfig).resolves(true);
-    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingConfig);
-    yaml.load.withArgs(existingConfig).returns({extends: scope});
+    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
+    yaml.load.withArgs(existingYaml).returns(existingConfig);
     configLifter.default.withArgs({configs, scope}).resolves(results);
+    scopeExtractor.default.withArgs(existingConfig).returns(scope);
 
     assert.deepEqual(await lift({configs, projectRoot}), results);
   });
