@@ -14,6 +14,8 @@ configuration for a project
 * [Usage](#usage)
   * [Installation](#installation)
   * [Example](#example)
+    * [Import](#import)
+    * [Execute](#execute)
 * [Contributing](#contributing)
   * [Dependencies](#dependencies)
   * [Verification](#verification)
@@ -39,7 +41,7 @@ $ npm install @form8ion/eslint --save
 #### Import
 
 ```javascript
-import {scaffold} from '@form8ion/eslint';
+import {lift, scaffold} from '@form8ion/eslint';
 ```
 
 #### Execute
@@ -47,6 +49,8 @@ import {scaffold} from '@form8ion/eslint';
 ```javascript
 (async () => {
   await scaffold({projectRoot: process.cwd()});
+
+  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react']});
 })();
 ```
 
