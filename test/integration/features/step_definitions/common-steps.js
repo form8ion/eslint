@@ -16,6 +16,7 @@ Before(function () {
       '@form8ion': {
         eslint: {
           node_modules: {
+            ...stubbedNodeModules,
             '.pnpm': {
               node_modules: stubbedNodeModules,
               'ansi-styles@4.3.0': {
@@ -34,7 +35,7 @@ After(function () {
 });
 
 When('the project is scaffolded', async function () {
-  await scaffold({projectRoot: process.cwd()});
+  await scaffold({projectRoot: process.cwd(), config: {}});
 });
 
 When('the project is lifted', async function () {
