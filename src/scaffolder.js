@@ -20,9 +20,7 @@ overrides:${complexConfigs.map(complexConfig => `
     : baseConfigs;
 }
 
-export default async function ({projectRoot, config, additionalConfigs, ignore: {directories = []} = {}}) {
-  const {scope} = config;
-
+export default async function ({projectRoot, scope, additionalConfigs, ignore: {directories = []} = {}}) {
   await Promise.all([
     fsPromises.writeFile(`${projectRoot}/.eslintrc.yml`, buildConfig(scope, additionalConfigs)),
     fsPromises.writeFile(`${projectRoot}/.eslintignore`, directories.join('\n'))

@@ -18,7 +18,7 @@ suite('scaffolder', () => {
   teardown(() => sandbox.restore());
 
   test('that the dependency is installed if the config is defined', async () => {
-    const result = await scaffold({config: {scope}});
+    const result = await scaffold({scope});
 
     assert.deepEqual(result.devDependencies, [`${scope}/eslint-config`]);
   });
@@ -43,7 +43,7 @@ suite('scaffolder', () => {
     const projectRoot = any.string();
 
     test('that the base config is added to the root of the project if the config scope is provided', async () => {
-      await scaffold({projectRoot, config: {packageName, scope}});
+      await scaffold({projectRoot, scope});
 
       assert.calledWith(
         fsPromises.writeFile,
@@ -56,12 +56,7 @@ extends: '${scope}'`
     test('that the additional configs are added if the config scope is provided', async () => {
       const additionalConfigs = any.listOf(any.word);
 
-      const result = await scaffold({
-        projectRoot,
-        config: {packageName, scope},
-        unitTested: true,
-        additionalConfigs
-      });
+      const result = await scaffold({projectRoot, scope, unitTested: true, additionalConfigs});
 
       assert.calledWith(
         fsPromises.writeFile,
@@ -75,7 +70,7 @@ extends:
     });
 
     test('that no additional configs are added if the additional list is empty', async () => {
-      await scaffold({projectRoot, config: {packageName, scope}, additionalConfigs: []});
+      await scaffold({projectRoot, scope, additionalConfigs: []});
 
       assert.calledWith(
         fsPromises.writeFile,
@@ -91,12 +86,7 @@ extends: '${scope}'`
       const stringConfigs = any.listOf(any.word);
       const additionalConfigs = [...stringConfigs, {name: configName, files: filePattern}];
 
-      const result = await scaffold({
-        projectRoot,
-        config: {packageName, scope},
-        unitTested: true,
-        additionalConfigs
-      });
+      const result = await scaffold({projectRoot, scope, unitTested: true, additionalConfigs});
 
       assert.calledWith(
         fsPromises.writeFile,
