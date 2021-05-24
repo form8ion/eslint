@@ -35,7 +35,7 @@ After(function () {
 });
 
 When('the project is scaffolded', async function () {
-  await scaffold({projectRoot: process.cwd(), config: {}});
+  await scaffold({projectRoot: process.cwd(), config: {}, ignore: {directories: this.ignoredDirectories}});
 });
 
 When('the project is lifted', async function () {

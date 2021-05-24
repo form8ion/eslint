@@ -115,24 +115,12 @@ overrides:
     });
 
     suite('eslint-ignore', () => {
-      test('that non-source files are excluded from linting', async () => {
-        const buildDirectory = any.string();
+      test('that the provided directories are excluded from linting', async () => {
+        const ignoredDirectories = any.listOf(any.string);
 
-        await scaffold({projectRoot, config: {packageName, scope}, buildDirectory});
+        await scaffold({projectRoot, config: {packageName, scope}, ignore: {directories: ignoredDirectories}});
 
-        assert.calledWith(fsPromises.writeFile, `${projectRoot}/.eslintignore`, sinon.match(`/${buildDirectory}/`));
-        assert.neverCalledWith(fsPromises.writeFile, `${projectRoot}/.eslintignore`, sinon.match('/coverage/'));
-      });
-
-      test('that the coverage folder is excluded from linting when the project is unit tested', async () => {
-        await scaffold({projectRoot, config: {packageName, scope}, unitTested: true});
-
-        assert.calledWith(
-          fsPromises.writeFile,
-          `${projectRoot}/.eslintignore`,
-          sinon.match(`
-/coverage/`)
-        );
+        assert.calledWith(fsPromises.writeFile, `${projectRoot}/.eslintignore`, ignoredDirectories.join('\n'));
       });
     });
   });

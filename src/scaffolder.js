@@ -20,9 +20,9 @@ overrides:${complexConfigs.map(complexConfig => `
     : baseConfigs;
 }
 
-export default async function ({config, projectRoot, unitTested, buildDirectory, additionalConfigs}) {
+export default async function ({config, projectRoot, ignore: {directories = []} = {}, additionalConfigs}) {
   const {scope} = config;
-  const eslintIgnoreDirectories = [`/${buildDirectory}/`, ...unitTested ? ['/coverage/'] : []];
+  const eslintIgnoreDirectories = directories;
 
   await Promise.all([
     fsPromises.writeFile(`${projectRoot}/.eslintrc.yml`, buildConfig(scope, additionalConfigs)),
