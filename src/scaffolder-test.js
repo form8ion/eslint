@@ -23,7 +23,7 @@ suite('scaffolder', () => {
     assert.deepEqual(result.devDependencies, [`${scope}/eslint-config`]);
   });
 
-  test('that the script is defined', async () => {
+  test('that the scripts are defined', async () => {
     assert.deepEqual(
       (await scaffold({config: {packageName}})).scripts,
       {
