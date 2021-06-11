@@ -21,7 +21,6 @@ Feature: ESLint Configs
     And additional shareable configs are provided
     When the project is lifted
     Then the yaml eslint config file contains the expected config
-    And the next-steps are provided
     And dependencies are defined for the additional configs
     And the yaml eslint config file is updated with the provided simple configs
 
@@ -30,7 +29,6 @@ Feature: ESLint Configs
     And additional shareable configs are provided
     When the project is lifted
     Then the yaml eslint config file contains the expected config
-    And the next-steps are provided
     And dependencies are defined for the additional configs
     And the yaml eslint config file is updated with the provided simple configs
 
@@ -39,7 +37,6 @@ Feature: ESLint Configs
     And complex additional shareable configs are provided
     When the project is lifted
     Then the yaml eslint config file contains the expected config
-    And the next-steps are provided
     And dependencies are defined for the additional configs
     And the yaml eslint config file is updated with the provided complex configs
 
@@ -49,6 +46,5 @@ Feature: ESLint Configs
     And complex additional shareable configs are provided
     When the project is lifted
     Then the yaml eslint config file contains the expected config
-    And the next-steps are provided
     And dependencies are defined for the additional configs
     And the yaml eslint config file is updated with the provided complex configs

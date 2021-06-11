@@ -26,22 +26,14 @@ suite('config lifter', () => {
 
   teardown(() => sandbox.restore());
 
-  test('that no `nextStep` is added if no configs are provided', () => {
-    assert.isUndefined(liftEslint({scope}).nextSteps);
-  });
-
   test('that dependencies are listed for requested simple configs', async () => {
     const configs = any.listOf(any.word);
     fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
     yaml.load.withArgs(existingYaml).returns(existingConfig);
     scopeExtractor.default.withArgs(existingConfig).returns(scope);
 
-    const {nextSteps, devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, pathToConfig});
 
-    assert.deepEqual(
-      nextSteps,
-      [{summary: `extend the following additional ESLint configs: ${configs.join(', ')}`}]
-    );
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config}`));
     assert.calledWith(
       fs.writeFile,
@@ -59,12 +51,8 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfig);
     scopeExtractor.default.withArgs(existingConfig).returns(scope);
 
-    const {nextSteps, devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, pathToConfig});
 
-    assert.deepEqual(
-      nextSteps,
-      [{summary: `extend the following additional ESLint configs: ${configs.join(', ')}`}]
-    );
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
     assert.calledWith(
       fs.writeFile,

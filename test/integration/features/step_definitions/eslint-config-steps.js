@@ -49,13 +49,6 @@ Then('the yaml eslint config file contains the expected config', async function 
   }
 });
 
-Then('the next-steps are provided', async function () {
-  assert.includeDeepMembers(
-    this.result.nextSteps,
-    [{summary: `extend the following additional ESLint configs: ${this.additionalShareableConfigs.join(', ')}`}]
-  );
-});
-
 Then('dependencies are defined for the additional configs', async function () {
   assert.deepEqual(
     this.result.devDependencies,
