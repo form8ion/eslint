@@ -35,7 +35,11 @@ After(function () {
 });
 
 When('the project is scaffolded', async function () {
-  await scaffold({projectRoot: process.cwd(), config: {}, ignore: {directories: this.ignoredDirectories}});
+  await scaffold({
+    projectRoot: process.cwd(),
+    scope: this.eslintConfigScope,
+    ignore: {directories: this.ignoredDirectories}
+  });
 });
 
 When('the project is lifted', async function () {

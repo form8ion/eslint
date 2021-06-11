@@ -53,33 +53,6 @@ extends: '${scope}'`
       );
     });
 
-    test('that the additional configs are added if the config scope is provided', async () => {
-      const additionalConfigs = any.listOf(any.word);
-
-      const result = await scaffold({projectRoot, scope, unitTested: true, additionalConfigs});
-
-      assert.calledWith(
-        fsPromises.writeFile,
-        `${projectRoot}/.eslintrc.yml`,
-        `root: true
-extends:
-  - '${scope}'
-  - '${scope}/${additionalConfigs.join(`'\n  - '${scope}/`)}'`
-      );
-      assert.deepEqual(result.devDependencies, [`${scope}/eslint-config`]);
-    });
-
-    test('that no additional configs are added if the additional list is empty', async () => {
-      await scaffold({projectRoot, scope, additionalConfigs: []});
-
-      assert.calledWith(
-        fsPromises.writeFile,
-        `${projectRoot}/.eslintrc.yml`,
-        `root: true
-extends: '${scope}'`
-      );
-    });
-
     test('that a file pattern can be specified for a config', async () => {
       const filePattern = any.string();
       const configName = any.word();
@@ -92,9 +65,7 @@ extends: '${scope}'`
         fsPromises.writeFile,
         `${projectRoot}/.eslintrc.yml`,
         `root: true
-extends:
-  - '${scope}'
-  - '${scope}/${stringConfigs.join(`'\n  - '${scope}/`)}'
+extends: '${scope}'
 
 overrides:
   - files: ${filePattern}

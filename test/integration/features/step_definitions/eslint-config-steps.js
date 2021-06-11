@@ -10,8 +10,6 @@ const eslintConfigScope = `@${any.word()}`;
 
 Given('no existing eslint config file is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
-
-  return undefined;
 });
 
 Given('an existing eslint config file is present', async function () {
@@ -37,6 +35,12 @@ Given('complex additional shareable configs are provided', async function () {
 
 Then('no eslint config file exists', async function () {
   assert.isFalse(await fileExists(pathToYamlConfig));
+});
+
+Then('a yaml config file was created', async function () {
+  const config = load(await fs.readFile(pathToYamlConfig));
+
+  assert.deepEqual(config.extends, eslintConfigScope);
 });
 
 Then('the yaml eslint config file contains the expected config', async function () {
