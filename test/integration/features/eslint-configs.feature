@@ -15,7 +15,6 @@ Feature: ESLint Configs
     When the project is lifted
     Then the yaml eslint config file contains the expected config
 
-  @wip
   Scenario: existing yaml config and shareable configs to add
     Given an existing eslint config file is present
     And additional shareable configs are provided
@@ -40,7 +39,6 @@ Feature: ESLint Configs
     And dependencies are defined for the additional configs
     And the yaml eslint config file is updated with the provided complex configs
 
-  @wip
   Scenario: existing yaml config and complex shareable configs to add
     Given an existing eslint config file is present
     And complex additional shareable configs are provided

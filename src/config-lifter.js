@@ -13,6 +13,12 @@ function getConfigToPackageNameMapper(scope) {
   return configName => `${scope}/eslint-config-${configName}`;
 }
 
+function normalizeExistingExtensions(existingExtensions) {
+  if ('string' === typeof existingExtensions) return [existingExtensions];
+
+  return existingExtensions;
+}
+
 export default async function ({configs, pathToConfig}) {
   info('Configuring ESLint', {level: 'secondary'});
 
@@ -30,7 +36,10 @@ export default async function ({configs, pathToConfig}) {
     pathToConfig,
     dump({
       ...existingConfig,
-      extends: [...existingConfig.extends, ...normalizedConfigBasenames.map(config => `${scope}/${config}`)]
+      extends: [
+        ...normalizeExistingExtensions(existingConfig.extends),
+        ...normalizedConfigBasenames.map(config => `${scope}/${config}`)
+      ]
     })
   );
 

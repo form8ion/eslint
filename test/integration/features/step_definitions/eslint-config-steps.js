@@ -22,7 +22,7 @@ Given('an existing eslint config file is present', async function () {
 
 Given('an existing eslint config file extending multiple configs is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
-  this.additionalExistingConfig = `@${eslintConfigScope}/${any.word()}`;
+  this.additionalExistingConfig = `${eslintConfigScope}/${any.word()}`;
 
   await fs.writeFile(pathToYamlConfig, dump({extends: [eslintConfigScope, this.additionalExistingConfig]}));
 });
@@ -44,6 +44,16 @@ Then('the yaml eslint config file contains the expected config', async function 
 
   if (this.additionalExistingConfig) {
     assert.includeMembers(config.extends, [eslintConfigScope, this.additionalExistingConfig]);
+  } else if (this.additionalShareableConfigs) {
+    assert.equal(config.extends[0], eslintConfigScope);
+    assert.includeMembers(
+      config.extends,
+      this.additionalShareableConfigs.map(cfg => {
+        if ('string' === typeof cfg) return `${eslintConfigScope}/${cfg}`;
+
+        return `${eslintConfigScope}/${cfg.name}`;
+      })
+    );
   } else {
     assert.deepEqual(config.extends, eslintConfigScope);
   }

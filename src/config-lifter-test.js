@@ -12,7 +12,8 @@ suite('config lifter', () => {
   const scope = any.word();
   const pathToConfig = any.string();
   const existingYaml = any.string();
-  const existingConfig = {...any.simpleObject(), extends: any.listOf(any.word)};
+  const existingConfigWithSingleExistingConfig = {...any.simpleObject(), extends: any.word()};
+  const existingConfigWithMultipleExistingConfigs = {...any.simpleObject(), extends: any.listOf(any.word)};
 
   setup(() => {
     sandbox = sinon.createSandbox();
@@ -26,11 +27,11 @@ suite('config lifter', () => {
 
   teardown(() => sandbox.restore());
 
-  test('that dependencies are listed for requested simple configs', async () => {
+  test('that a single exiting config is extended by additional simple configs & dependencies are listed', async () => {
     const configs = any.listOf(any.word);
     fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
-    yaml.load.withArgs(existingYaml).returns(existingConfig);
-    scopeExtractor.default.withArgs(existingConfig).returns(scope);
+    yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
+    scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
 
     const {devDependencies} = await liftEslint({configs, pathToConfig});
 
@@ -39,17 +40,36 @@ suite('config lifter', () => {
       fs.writeFile,
       pathToConfig,
       yaml.dump({
-        ...existingConfig,
-        extends: [...existingConfig.extends, ...configs.map(config => `${scope}/${config}`)]
+        ...existingConfigWithSingleExistingConfig,
+        extends: [existingConfigWithSingleExistingConfig.extends, ...configs.map(config => `${scope}/${config}`)]
       })
     );
   });
 
-  test('that dependencies are listed for requested complex configs', async () => {
+  test('that multiple existing configs are extended by simple configs & dependencies are listed', async () => {
+    const configs = any.listOf(any.word);
+    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
+    yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
+    scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
+
+    const {devDependencies} = await liftEslint({configs, pathToConfig});
+
+    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config}`));
+    assert.calledWith(
+      fs.writeFile,
+      pathToConfig,
+      yaml.dump({
+        ...existingConfigWithMultipleExistingConfigs,
+        extends: [...existingConfigWithMultipleExistingConfigs.extends, ...configs.map(config => `${scope}/${config}`)]
+      })
+    );
+  });
+
+  test('that multiple existing configs are extended by complex configs & dependencies are listed', async () => {
     const configs = any.listOf(() => ({...any.simpleObject(), name: any.word()}));
     fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
-    yaml.load.withArgs(existingYaml).returns(existingConfig);
-    scopeExtractor.default.withArgs(existingConfig).returns(scope);
+    yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
+    scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
     const {devDependencies} = await liftEslint({configs, pathToConfig});
 
@@ -58,8 +78,11 @@ suite('config lifter', () => {
       fs.writeFile,
       pathToConfig,
       yaml.dump({
-        ...existingConfig,
-        extends: [...existingConfig.extends, ...configs.map(config => `${scope}/${config.name}`)]
+        ...existingConfigWithMultipleExistingConfigs,
+        extends: [
+          ...existingConfigWithMultipleExistingConfigs.extends,
+          ...configs.map(config => `${scope}/${config.name}`)
+        ]
       })
     );
   });
