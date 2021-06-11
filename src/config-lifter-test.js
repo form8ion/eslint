@@ -27,6 +27,22 @@ suite('config lifter', () => {
 
   teardown(() => sandbox.restore());
 
+  test('that no additional extension is applied when no additional configs are provided', async () => {
+    assert.deepEqual(await liftEslint({pathToConfig}), {});
+    assert.notCalled(fs.readFile);
+    assert.notCalled(fs.writeFile);
+    assert.notCalled(yaml.load);
+    assert.notCalled(scopeExtractor.default);
+  });
+
+  test('that no additional extension is applied when an empty list of additional configs is provided', async () => {
+    assert.deepEqual(await liftEslint({configs: [], pathToConfig}), {});
+    assert.notCalled(fs.readFile);
+    assert.notCalled(fs.writeFile);
+    assert.notCalled(yaml.load);
+    assert.notCalled(scopeExtractor.default);
+  });
+
   test('that a single exiting config is extended by additional simple configs & dependencies are listed', async () => {
     const configs = any.listOf(any.word);
     fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);

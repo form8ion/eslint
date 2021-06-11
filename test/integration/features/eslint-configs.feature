@@ -10,6 +10,12 @@ Feature: ESLint Configs
     When the project is lifted
     Then the yaml eslint config file contains the expected config
 
+  Scenario: existing yaml config, but empty list of updates
+    Given an existing eslint config file is present
+    And an empty list of additional shareable configs is provided
+    When the project is lifted
+    Then the yaml eslint config file contains the expected config
+
   Scenario: existing yaml extending multiple configs, but no updates
     Given an existing eslint config file extending multiple configs is present
     When the project is lifted

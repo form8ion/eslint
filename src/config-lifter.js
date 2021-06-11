@@ -22,7 +22,7 @@ function normalizeExistingExtensions(existingExtensions) {
 export default async function ({configs, pathToConfig}) {
   info('Configuring ESLint', {level: 'secondary'});
 
-  if (!configs) {
+  if (!configs || 0 === configs.length) {
     info('No additional ESLint configs provided', {level: 'secondary'});
 
     return {};

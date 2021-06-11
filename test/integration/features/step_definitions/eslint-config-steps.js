@@ -25,6 +25,10 @@ Given('an existing eslint config file extending multiple configs is present', as
   await fs.writeFile(pathToYamlConfig, dump({extends: [eslintConfigScope, this.additionalExistingConfig]}));
 });
 
+Given('an empty list of additional shareable configs is provided', async function () {
+  this.additionalShareableConfigs = [];
+});
+
 Given('additional shareable configs are provided', async function () {
   this.additionalShareableConfigs = any.listOf(any.word);
 });
@@ -48,7 +52,7 @@ Then('the yaml eslint config file contains the expected config', async function 
 
   if (this.additionalExistingConfig) {
     assert.includeMembers(config.extends, [eslintConfigScope, this.additionalExistingConfig]);
-  } else if (this.additionalShareableConfigs) {
+  } else if (this.additionalShareableConfigs && 0 !== this.additionalShareableConfigs.length) {
     assert.equal(config.extends[0], eslintConfigScope);
     assert.includeMembers(
       config.extends,
