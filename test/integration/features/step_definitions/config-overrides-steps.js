@@ -17,7 +17,7 @@ Given('additional shareable configs, specifying file paths, are provided', async
 
 Given('the existing eslint config file contains existing overrides', async function () {
   this.eslintConfigScope = eslintConfigScope;
-  this.existingOverrides = any.listOf(() => ({name: any.word(), files: any.string()}));
+  this.existingOverrides = any.listOf(() => ({extends: any.word(), files: any.string()}));
 
   await fs.writeFile(pathToYamlConfig, dump({extends: eslintConfigScope, overrides: this.existingOverrides}));
 });

@@ -23,6 +23,8 @@ suite('config lifter', () => {
     sandbox.stub(yaml, 'load');
     sandbox.stub(core, 'fileExists');
     sandbox.stub(scopeExtractor, 'default');
+
+    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
   });
 
   teardown(() => sandbox.restore());
@@ -45,7 +47,6 @@ suite('config lifter', () => {
 
   test('that a single exiting config is extended by additional simple configs & dependencies are listed', async () => {
     const configs = any.listOf(any.word);
-    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
     yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
     scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
 
@@ -64,7 +65,6 @@ suite('config lifter', () => {
 
   test('that multiple existing configs are extended by simple configs & dependencies are listed', async () => {
     const configs = any.listOf(any.word);
-    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
@@ -83,7 +83,6 @@ suite('config lifter', () => {
 
   test('that multiple existing configs are extended by complex configs & dependencies are listed', async () => {
     const configs = any.listOf(() => ({...any.simpleObject(), name: any.word()}));
-    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
@@ -99,6 +98,25 @@ suite('config lifter', () => {
           ...existingConfigWithMultipleExistingConfigs.extends,
           ...configs.map(config => `${scope}/${config.name}`)
         ]
+      })
+    );
+  });
+
+  test('that `overrides` are added to the config when configs with file patterns defined are provided', async () => {
+    const configs = any.listOf(() => ({...any.simpleObject(), name: any.word(), files: any.string()}));
+    yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
+    scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
+
+    const {devDependencies} = await liftEslint({configs, pathToConfig});
+
+    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
+    assert.calledWith(
+      fs.writeFile,
+      pathToConfig,
+      yaml.dump({
+        ...existingConfigWithSingleExistingConfig,
+        extends: [existingConfigWithSingleExistingConfig.extends, ...configs.map(config => `${scope}/${config.name}`)],
+        overrides: configs.map(config => ({extends: config.name, files: config.files}))
       })
     );
   });

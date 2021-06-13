@@ -33,6 +33,9 @@ export default async function ({configs, pathToConfig}) {
   }
 
   const normalizedConfigBasenames = configs.map(normalizeConfigBasename);
+  const overrides = configs
+    .filter(config => 'string' !== typeof config && config.files)
+    .map(({name, files}) => ({extends: name, files}));
   const existingConfig = load(await fs.readFile(pathToConfig, 'utf-8'));
   const scope = extractScopeFrom(existingConfig);
 
@@ -43,7 +46,8 @@ export default async function ({configs, pathToConfig}) {
       extends: [
         ...normalizeExistingExtensions(existingConfig.extends),
         ...normalizedConfigBasenames.map(config => `${scope}/${config}`)
-      ]
+      ],
+      ...overrides.length && {overrides}
     })
   );
 
