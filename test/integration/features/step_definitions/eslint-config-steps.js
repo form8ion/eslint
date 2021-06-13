@@ -5,8 +5,8 @@ import {assert} from 'chai';
 import any from '@travi/any';
 import {fileExists} from '@form8ion/core';
 
-const pathToYamlConfig = `${process.cwd()}/.eslintrc.yml`;
-const eslintConfigScope = `@${any.word()}`;
+export const pathToYamlConfig = `${process.cwd()}/.eslintrc.yml`;
+export const eslintConfigScope = `@${any.word()}`;
 
 Given('no existing eslint config file is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
