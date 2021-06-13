@@ -19,10 +19,14 @@ function normalizeExistingExtensions(existingExtensions) {
   return existingExtensions;
 }
 
+function noAdditionalConfigsWereProvided(configs) {
+  return !configs || 0 === configs.length;
+}
+
 export default async function ({configs, pathToConfig}) {
   info('Configuring ESLint', {level: 'secondary'});
 
-  if (!configs || 0 === configs.length) {
+  if (noAdditionalConfigsWereProvided(configs)) {
     info('No additional ESLint configs provided', {level: 'secondary'});
 
     return {};
