@@ -42,3 +42,9 @@ Then('the expected overrides are defined in the config file', async function () 
     ]
   );
 });
+
+Then('the existing extensions are preserved', async function () {
+  const config = load(await fs.readFile(pathToYamlConfig));
+
+  assert.equal(config.extends, eslintConfigScope);
+});

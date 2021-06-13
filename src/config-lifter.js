@@ -33,6 +33,9 @@ export default async function ({configs, pathToConfig}) {
   }
 
   const normalizedConfigBasenames = configs.map(normalizeConfigBasename);
+  const normalizedNonOverrideConfigBasenames = configs
+    .filter(config => 'string' === typeof config || !config.files)
+    .map(normalizeConfigBasename);
   const overrides = configs
     .filter(config => 'string' !== typeof config && config.files)
     .map(({name, files}) => ({extends: name, files}));
@@ -43,10 +46,12 @@ export default async function ({configs, pathToConfig}) {
     pathToConfig,
     dump({
       ...existingConfig,
-      extends: [
-        ...normalizeExistingExtensions(existingConfig.extends),
-        ...normalizedConfigBasenames.map(config => `${scope}/${config}`)
-      ],
+      extends: normalizedNonOverrideConfigBasenames.length
+        ? [
+          ...normalizeExistingExtensions(existingConfig.extends),
+          ...normalizedNonOverrideConfigBasenames.map(config => `${scope}/${config}`)
+        ]
+        : existingConfig.extends,
       ...overrides.length && {overrides}
     })
   );

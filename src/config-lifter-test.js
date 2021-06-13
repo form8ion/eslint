@@ -115,7 +115,7 @@ suite('config lifter', () => {
       pathToConfig,
       yaml.dump({
         ...existingConfigWithSingleExistingConfig,
-        extends: [existingConfigWithSingleExistingConfig.extends, ...configs.map(config => `${scope}/${config.name}`)],
+        extends: existingConfigWithSingleExistingConfig.extends,
         overrides: configs.map(config => ({extends: config.name, files: config.files}))
       })
     );
