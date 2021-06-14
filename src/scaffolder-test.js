@@ -53,28 +53,6 @@ extends: '${scope}'`
       );
     });
 
-    test('that a file pattern can be specified for a config', async () => {
-      const filePattern = any.string();
-      const configName = any.word();
-      const stringConfigs = any.listOf(any.word);
-      const additionalConfigs = [...stringConfigs, {name: configName, files: filePattern}];
-
-      const result = await scaffold({projectRoot, scope, unitTested: true, additionalConfigs});
-
-      assert.calledWith(
-        fsPromises.writeFile,
-        `${projectRoot}/.eslintrc.yml`,
-        `root: true
-extends: '${scope}'
-
-overrides:
-  - files: ${filePattern}
-    extends: '${scope}/${configName}'
-`
-      );
-      assert.deepEqual(result.devDependencies, [`${scope}/eslint-config`]);
-    });
-
     suite('eslint-ignore', () => {
       test('that the provided directories are excluded from linting', async () => {
         const ignoredDirectories = any.listOf(any.string);

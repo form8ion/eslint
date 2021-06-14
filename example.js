@@ -9,7 +9,7 @@ stubbedFs();
 // #### Execute
 
 (async () => {
-  await scaffold({projectRoot: process.cwd()});
+  await scaffold({projectRoot: process.cwd(), scope: '@foo', ignore: {directories: []}});
 
   await lift({projectRoot: process.cwd(), configs: ['mocha', 'react']});
 })();
