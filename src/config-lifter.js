@@ -13,6 +13,10 @@ function getConfigToPackageNameMapper(scope) {
   return configName => `${scope}/eslint-config-${configName}`;
 }
 
+function getConfigBasenameToConfigShortNameMapper(scope) {
+  return configName => `${scope}/${configName}`;
+}
+
 function normalizeExistingExtensions(existingExtensions) {
   if ('string' === typeof existingExtensions) return [existingExtensions];
 
@@ -32,15 +36,17 @@ export default async function ({configs, pathToConfig}) {
     return {};
   }
 
+  const existingConfig = load(await fs.readFile(pathToConfig, 'utf-8'));
+  const scope = extractScopeFrom(existingConfig);
+  const mapConfigNameToPackageName = getConfigToPackageNameMapper(scope);
+  const mapConfigBasenameToConfigShortName = getConfigBasenameToConfigShortNameMapper(scope);
   const normalizedConfigBasenames = configs.map(normalizeConfigBasename);
   const normalizedNonOverrideConfigBasenames = configs
     .filter(config => 'string' === typeof config || !config.files)
     .map(normalizeConfigBasename);
   const overrides = configs
-    .filter(config => 'string' !== typeof config && config.files)
-    .map(({name, files}) => ({extends: name, files}));
-  const existingConfig = load(await fs.readFile(pathToConfig, 'utf-8'));
-  const scope = extractScopeFrom(existingConfig);
+    .filter(config => 'object' === typeof config && config.files)
+    .map(({name, files}) => ({extends: mapConfigBasenameToConfigShortName(name), files}));
 
   await fs.writeFile(
     pathToConfig,
@@ -49,14 +55,12 @@ export default async function ({configs, pathToConfig}) {
       extends: normalizedNonOverrideConfigBasenames.length
         ? [
           ...normalizeExistingExtensions(existingConfig.extends),
-          ...normalizedNonOverrideConfigBasenames.map(config => `${scope}/${config}`)
+          ...normalizedNonOverrideConfigBasenames.map(mapConfigBasenameToConfigShortName)
         ]
         : existingConfig.extends,
       ...overrides.length && {overrides}
     })
   );
-
-  const mapConfigNameToPackageName = getConfigToPackageNameMapper(scope);
 
   return {devDependencies: normalizedConfigBasenames.map(mapConfigNameToPackageName)};
 }

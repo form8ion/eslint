@@ -31,7 +31,9 @@ Then('no overrides are defined in the config file', async function () {
 Then('the expected overrides are defined in the config file', async function () {
   const config = load(await fs.readFile(pathToYamlConfig));
   const additionalOverrides = this.additionalShareableConfigs
-    ? this.additionalShareableConfigs.filter(cfg => cfg.files).map(cfg => ({extends: cfg.name, files: cfg.files}))
+    ? this.additionalShareableConfigs
+      .filter(cfg => cfg.files)
+      .map(cfg => ({extends: `${eslintConfigScope}/${cfg.name}`, files: cfg.files}))
     : [];
 
   assert.deepEqual(
