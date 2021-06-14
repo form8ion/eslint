@@ -1,22 +1,69 @@
+import {promises as fs} from 'fs';
+import {dump, load} from 'js-yaml';
 import {info} from '@travi/cli-messages';
+import extractScopeFrom from './scope-extractor';
 
-function getConfigToPackageNameMapper(scope) {
-  return config => {
-    if ('string' === typeof config) return `${scope}/eslint-config-${config}`;
+function normalizeConfigBasename(config) {
+  if ('string' === typeof config) return config;
 
-    return `${scope}/eslint-config-${config.name}`;
-  };
+  return config.name;
 }
 
-export default function ({configs, scope}) {
+function getConfigToPackageNameMapper(scope) {
+  return configName => `${scope}/eslint-config-${configName}`;
+}
+
+function getConfigBasenameToConfigShortNameMapper(scope) {
+  return configName => `${scope}/${configName}`;
+}
+
+function normalizeExistingExtensions(existingExtensions) {
+  if ('string' === typeof existingExtensions) return [existingExtensions];
+
+  return existingExtensions;
+}
+
+function noAdditionalConfigsWereProvided(configs) {
+  return !configs || 0 === configs.length;
+}
+
+export default async function ({configs, pathToConfig}) {
   info('Configuring ESLint', {level: 'secondary'});
 
-  const mapConfigNameToPackageName = getConfigToPackageNameMapper(scope);
+  if (noAdditionalConfigsWereProvided(configs)) {
+    info('No additional ESLint configs provided', {level: 'secondary'});
 
-  return {
-    ...configs && {
-      devDependencies: configs.map(mapConfigNameToPackageName),
-      nextSteps: [{summary: `extend the following additional ESLint configs: ${configs.join(', ')}`}]
-    }
-  };
+    return {};
+  }
+
+  const existingConfig = load(await fs.readFile(pathToConfig, 'utf-8'));
+  const scope = extractScopeFrom(existingConfig);
+  const mapConfigNameToPackageName = getConfigToPackageNameMapper(scope);
+  const mapConfigBasenameToConfigShortName = getConfigBasenameToConfigShortNameMapper(scope);
+  const normalizedConfigBasenames = configs.map(normalizeConfigBasename);
+  const normalizedNonOverrideConfigBasenames = configs
+    .filter(config => 'string' === typeof config || !config.files)
+    .map(normalizeConfigBasename);
+  const overrides = [
+    ...existingConfig.overrides ? existingConfig.overrides : [],
+    ...configs
+      .filter(config => 'object' === typeof config && config.files)
+      .map(({name, files}) => ({extends: mapConfigBasenameToConfigShortName(name), files}))
+  ];
+
+  await fs.writeFile(
+    pathToConfig,
+    dump({
+      ...existingConfig,
+      extends: normalizedNonOverrideConfigBasenames.length
+        ? [
+          ...normalizeExistingExtensions(existingConfig.extends),
+          ...normalizedNonOverrideConfigBasenames.map(mapConfigBasenameToConfigShortName)
+        ]
+        : existingConfig.extends,
+      ...overrides.length && {overrides}
+    })
+  );
+
+  return {devDependencies: normalizedConfigBasenames.map(mapConfigNameToPackageName)};
 }

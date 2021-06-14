@@ -5,13 +5,11 @@ import {assert} from 'chai';
 import any from '@travi/any';
 import {fileExists} from '@form8ion/core';
 
-const pathToYamlConfig = `${process.cwd()}/.eslintrc.yml`;
-const eslintConfigScope = `@${any.word()}`;
+export const pathToYamlConfig = `${process.cwd()}/.eslintrc.yml`;
+export const eslintConfigScope = `@${any.word()}`;
 
 Given('no existing eslint config file is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
-
-  return undefined;
 });
 
 Given('an existing eslint config file is present', async function () {
@@ -22,9 +20,13 @@ Given('an existing eslint config file is present', async function () {
 
 Given('an existing eslint config file extending multiple configs is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
-  this.additionalExistingConfig = `@${eslintConfigScope}/${any.word()}`;
+  this.additionalExistingConfig = `${eslintConfigScope}/${any.word()}`;
 
   await fs.writeFile(pathToYamlConfig, dump({extends: [eslintConfigScope, this.additionalExistingConfig]}));
+});
+
+Given('an empty list of additional shareable configs is provided', async function () {
+  this.additionalShareableConfigs = [];
 });
 
 Given('additional shareable configs are provided', async function () {
@@ -39,21 +41,30 @@ Then('no eslint config file exists', async function () {
   assert.isFalse(await fileExists(pathToYamlConfig));
 });
 
+Then('a yaml config file was created', async function () {
+  const config = load(await fs.readFile(pathToYamlConfig));
+
+  assert.deepEqual(config.extends, eslintConfigScope);
+});
+
 Then('the yaml eslint config file contains the expected config', async function () {
   const config = load(await fs.readFile(pathToYamlConfig));
 
   if (this.additionalExistingConfig) {
-    assert.deepEqual(config.extends, [eslintConfigScope, this.additionalExistingConfig]);
+    assert.includeMembers(config.extends, [eslintConfigScope, this.additionalExistingConfig]);
+  } else if (this.additionalShareableConfigs && 0 !== this.additionalShareableConfigs.length) {
+    assert.equal(config.extends[0], eslintConfigScope);
+    assert.includeMembers(
+      config.extends,
+      this.additionalShareableConfigs.map(cfg => {
+        if ('string' === typeof cfg) return `${eslintConfigScope}/${cfg}`;
+
+        return `${eslintConfigScope}/${cfg.name}`;
+      })
+    );
   } else {
     assert.deepEqual(config.extends, eslintConfigScope);
   }
-});
-
-Then('the next-steps are provided', async function () {
-  assert.includeDeepMembers(
-    this.result.nextSteps,
-    [{summary: `extend the following additional ESLint configs: ${this.additionalShareableConfigs.join(', ')}`}]
-  );
 });
 
 Then('dependencies are defined for the additional configs', async function () {
@@ -64,5 +75,23 @@ Then('dependencies are defined for the additional configs', async function () {
 
       return `${this.eslintConfigScope}/eslint-config-${config.name}`;
     })
+  );
+});
+
+Then('the yaml eslint config file is updated with the provided simple configs', async function () {
+  const config = load(await fs.readFile(pathToYamlConfig));
+
+  assert.includeMembers(
+    config.extends,
+    this.additionalShareableConfigs.map(configName => `${this.eslintConfigScope}/${configName}`)
+  );
+});
+
+Then('the yaml eslint config file is updated with the provided complex configs', async function () {
+  const config = load(await fs.readFile(pathToYamlConfig));
+
+  assert.includeMembers(
+    config.extends,
+    this.additionalShareableConfigs.map(({name}) => `${this.eslintConfigScope}/${name}`)
   );
 });
