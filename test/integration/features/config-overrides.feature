@@ -22,7 +22,6 @@ Feature: Config Overrides
     And the expected overrides are defined in the config file
     And dependencies are defined for the additional configs
 
-  @wip
   Scenario: Existing overrides, overrides provided
     Given the existing eslint config file contains existing overrides
     And additional shareable configs, specifying file paths, are provided

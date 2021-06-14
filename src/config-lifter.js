@@ -44,9 +44,12 @@ export default async function ({configs, pathToConfig}) {
   const normalizedNonOverrideConfigBasenames = configs
     .filter(config => 'string' === typeof config || !config.files)
     .map(normalizeConfigBasename);
-  const overrides = configs
-    .filter(config => 'object' === typeof config && config.files)
-    .map(({name, files}) => ({extends: mapConfigBasenameToConfigShortName(name), files}));
+  const overrides = [
+    ...existingConfig.overrides ? existingConfig.overrides : [],
+    ...configs
+      .filter(config => 'object' === typeof config && config.files)
+      .map(({name, files}) => ({extends: mapConfigBasenameToConfigShortName(name), files}))
+  ];
 
   await fs.writeFile(
     pathToConfig,

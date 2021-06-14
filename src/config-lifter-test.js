@@ -14,6 +14,11 @@ suite('config lifter', () => {
   const existingYaml = any.string();
   const existingConfigWithSingleExistingConfig = {...any.simpleObject(), extends: any.word()};
   const existingConfigWithMultipleExistingConfigs = {...any.simpleObject(), extends: any.listOf(any.word)};
+  const existingConfigWithOverrides = {
+    ...any.simpleObject(),
+    extends: any.listOf(any.word),
+    overrides: any.listOf(() => ({extends: any.word(), files: any.string()}))
+  };
 
   setup(() => {
     sandbox = sinon.createSandbox();
@@ -117,6 +122,28 @@ suite('config lifter', () => {
         ...existingConfigWithSingleExistingConfig,
         extends: existingConfigWithSingleExistingConfig.extends,
         overrides: configs.map(config => ({extends: `${scope}/${config.name}`, files: config.files}))
+      })
+    );
+  });
+
+  test('that `overrides` are added to the existing overrides in the config', async () => {
+    const configs = any.listOf(() => ({...any.simpleObject(), name: any.word(), files: any.string()}));
+    yaml.load.withArgs(existingYaml).returns(existingConfigWithOverrides);
+    scopeExtractor.default.withArgs(existingConfigWithOverrides).returns(scope);
+
+    const {devDependencies} = await liftEslint({configs, pathToConfig});
+
+    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
+    assert.calledWith(
+      fs.writeFile,
+      pathToConfig,
+      yaml.dump({
+        ...existingConfigWithOverrides,
+        extends: existingConfigWithOverrides.extends,
+        overrides: [
+          ...existingConfigWithOverrides.overrides,
+          ...configs.map(config => ({extends: `${scope}/${config.name}`, files: config.files}))
+        ]
       })
     );
   });
