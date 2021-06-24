@@ -12,8 +12,12 @@ suite('config lifter', () => {
   const scope = any.word();
   const pathToConfig = any.string();
   const existingYaml = any.string();
+  const duplicateConfig = any.word();
   const existingConfigWithSingleExistingConfig = {...any.simpleObject(), extends: any.word()};
-  const existingConfigWithMultipleExistingConfigs = {...any.simpleObject(), extends: any.listOf(any.word)};
+  const existingConfigWithMultipleExistingConfigs = {
+    ...any.simpleObject(),
+    extends: [...any.listOf(any.word), `${scope}/${duplicateConfig}`]
+  };
   const existingConfigWithOverrides = {
     ...any.simpleObject(),
     extends: any.listOf(any.word),
@@ -69,7 +73,8 @@ suite('config lifter', () => {
   });
 
   test('that multiple existing configs are extended by simple configs & dependencies are listed', async () => {
-    const configs = any.listOf(any.word);
+    const configsWithoutDuplicate = any.listOf(any.word);
+    const configs = [...configsWithoutDuplicate, duplicateConfig];
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
@@ -81,7 +86,10 @@ suite('config lifter', () => {
       pathToConfig,
       yaml.dump({
         ...existingConfigWithMultipleExistingConfigs,
-        extends: [...existingConfigWithMultipleExistingConfigs.extends, ...configs.map(config => `${scope}/${config}`)]
+        extends: [
+          ...existingConfigWithMultipleExistingConfigs.extends,
+          ...configsWithoutDuplicate.map(config => `${scope}/${config}`)
+        ]
       })
     );
   });

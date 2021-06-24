@@ -52,3 +52,10 @@ Feature: ESLint Configs
     Then the yaml eslint config file contains the expected config
     And dependencies are defined for the additional configs
     And the yaml eslint config file is updated with the provided complex configs
+
+  Scenario: duplicate config between existing and provided
+    Given some provided configs duplicate existing configs
+    When the project is lifted
+    And dependencies are defined for the additional configs
+    And the yaml eslint config file is updated with the provided simple configs
+    But there are no duplicates listed in the extended configs

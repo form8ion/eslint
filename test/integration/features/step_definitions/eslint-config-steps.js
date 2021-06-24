@@ -37,6 +37,15 @@ Given('complex additional shareable configs are provided', async function () {
   this.additionalShareableConfigs = any.listOf(() => ({...any.simpleObject(), name: any.word()}));
 });
 
+Given('some provided configs duplicate existing configs', async function () {
+  const additionalConfigBase = any.word();
+  this.eslintConfigScope = eslintConfigScope;
+  this.additionalExistingConfig = `${eslintConfigScope}/${additionalConfigBase}`;
+  this.additionalShareableConfigs = [additionalConfigBase, ...any.listOf(any.word)];
+
+  await fs.writeFile(pathToYamlConfig, dump({extends: [eslintConfigScope, this.additionalExistingConfig]}));
+});
+
 Then('no eslint config file exists', async function () {
   assert.isFalse(await fileExists(pathToYamlConfig));
 });
@@ -94,4 +103,13 @@ Then('the yaml eslint config file is updated with the provided complex configs',
     config.extends,
     this.additionalShareableConfigs.map(({name}) => `${this.eslintConfigScope}/${name}`)
   );
+});
+
+Then('there are no duplicates listed in the extended configs', async function () {
+  const config = load(await fs.readFile(pathToYamlConfig));
+
+  const counts = config.extends.reduce((acc, cfg) => ({...acc, [cfg]: [...acc[cfg] ? acc[cfg] : [], cfg]}), {});
+  const countsHigherThanOne = Object.entries(counts).filter(([, list]) => 1 < list.length);
+
+  assert.equal(countsHigherThanOne.length, 0);
 });

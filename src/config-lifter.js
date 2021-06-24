@@ -56,10 +56,10 @@ export default async function ({configs, pathToConfig}) {
     dump({
       ...existingConfig,
       extends: normalizedNonOverrideConfigBasenames.length
-        ? [
+        ? [...new Set([
           ...normalizeExistingExtensions(existingConfig.extends),
           ...normalizedNonOverrideConfigBasenames.map(mapConfigBasenameToConfigShortName)
-        ]
+        ])]
         : existingConfig.extends,
       ...overrides.length && {overrides}
     })
