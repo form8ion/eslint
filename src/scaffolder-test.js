@@ -1,18 +1,22 @@
 import {promises as fsPromises} from 'fs';
+import * as core from '@form8ion/core';
+
 import {assert} from 'chai';
 import any from '@travi/any';
 import sinon from 'sinon';
+
 import scaffold from './scaffolder';
 
 suite('scaffolder', () => {
   let sandbox;
   const packageName = any.word();
-  const scope = any.string();
+  const scope = `@${any.string()}`;
 
   setup(() => {
     sandbox = sinon.createSandbox();
 
     sandbox.stub(fsPromises, 'writeFile');
+    sandbox.stub(core, 'writeConfigFile');
   });
 
   teardown(() => sandbox.restore());
@@ -46,10 +50,8 @@ suite('scaffolder', () => {
       await scaffold({projectRoot, scope});
 
       assert.calledWith(
-        fsPromises.writeFile,
-        `${projectRoot}/.eslintrc.yml`,
-        `root: true
-extends: '${scope}'`
+        core.writeConfigFile,
+        {path: projectRoot, name: '.eslintrc', format: core.fileTypes.YAML, config: {root: true, extends: scope}}
       );
     });
 
