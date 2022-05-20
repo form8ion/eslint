@@ -3,13 +3,11 @@ import {warn} from '@travi/cli-messages';
 import liftConfig from './config-lifter';
 
 export default async function ({projectRoot, configs}) {
-  const pathToExistingConfig = `${projectRoot}/.eslintrc.yml`;
-
-  if (!await fileExists(pathToExistingConfig)) {
+  if (!await fileExists(`${projectRoot}/.eslintrc.yml`)) {
     warn('No existing configuration found for ESLint. Skipping configuration extension');
 
     return {};
   }
 
-  return liftConfig({configs, pathToConfig: pathToExistingConfig});
+  return liftConfig({configs, projectRoot});
 }

@@ -1,6 +1,8 @@
 import {promises as fs} from 'fs';
-import {dump, load} from 'js-yaml';
+import {load} from 'js-yaml';
 import {info} from '@travi/cli-messages';
+import {fileTypes, writeConfigFile} from '@form8ion/core';
+
 import extractScopeFrom from './scope-extractor';
 
 function normalizeConfigBasename(config) {
@@ -27,8 +29,11 @@ function noAdditionalConfigsWereProvided(configs) {
   return !configs || 0 === configs.length;
 }
 
-export default async function ({configs, pathToConfig}) {
+export default async function ({configs, projectRoot}) {
   info('Configuring ESLint', {level: 'secondary'});
+
+  const configFileName = '.eslintrc';
+  const pathToConfig = `${projectRoot}/${configFileName}.yml`;
 
   if (noAdditionalConfigsWereProvided(configs)) {
     info('No additional ESLint configs provided', {level: 'secondary'});
@@ -51,18 +56,22 @@ export default async function ({configs, pathToConfig}) {
       .map(({name, files}) => ({extends: mapConfigBasenameToConfigShortName(name), files}))
   ];
 
-  await fs.writeFile(
-    pathToConfig,
-    dump({
-      ...existingConfig,
-      extends: normalizedNonOverrideConfigBasenames.length
-        ? [...new Set([
-          ...normalizeExistingExtensions(existingConfig.extends),
-          ...normalizedNonOverrideConfigBasenames.map(mapConfigBasenameToConfigShortName)
-        ])]
-        : existingConfig.extends,
-      ...overrides.length && {overrides}
-    })
+  await writeConfigFile(
+    {
+      path: projectRoot,
+      name: configFileName,
+      format: fileTypes.YAML,
+      config: {
+        ...existingConfig,
+        extends: normalizedNonOverrideConfigBasenames.length
+          ? [...new Set([
+            ...normalizeExistingExtensions(existingConfig.extends),
+            ...normalizedNonOverrideConfigBasenames.map(mapConfigBasenameToConfigShortName)
+          ])]
+          : existingConfig.extends,
+        ...overrides.length && {overrides}
+      }
+    }
   );
 
   return {devDependencies: normalizedConfigBasenames.map(mapConfigNameToPackageName)};

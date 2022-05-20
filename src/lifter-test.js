@@ -21,16 +21,14 @@ suite('lifter', () => {
 
   test('that the existing config is lifted', async () => {
     const results = any.simpleObject();
-    const pathToConfig = `${projectRoot}/.eslintrc.yml`;
-    core.fileExists.withArgs(pathToConfig).resolves(true);
-    configLifter.default.withArgs({configs, pathToConfig: `${projectRoot}/.eslintrc.yml`}).resolves(results);
+    core.fileExists.withArgs(`${projectRoot}/.eslintrc.yml`).resolves(true);
+    configLifter.default.withArgs({configs, projectRoot}).resolves(results);
 
     assert.deepEqual(await lift({configs, projectRoot}), results);
   });
 
   test('that no changes made when no config exists', async () => {
-    const pathToConfig = `${projectRoot}/.eslintrc.yml`;
-    core.fileExists.withArgs(pathToConfig).resolves(false);
+    core.fileExists.withArgs(`${projectRoot}/.eslintrc.yml`).resolves(false);
 
     assert.deepEqual(await lift({configs, projectRoot}), {});
   });

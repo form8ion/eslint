@@ -1,16 +1,18 @@
 import {promises as fs} from 'fs';
 import yaml from 'js-yaml';
 import * as core from '@form8ion/core';
+
 import {assert} from 'chai';
 import sinon from 'sinon';
 import any from '@travi/any';
+
 import liftEslint from './config-lifter';
 import * as scopeExtractor from './scope-extractor';
 
 suite('config lifter', () => {
   let sandbox;
   const scope = any.word();
-  const pathToConfig = any.string();
+  const projectRoot = any.string();
   const existingYaml = any.string();
   const duplicateConfig = any.word();
   const existingConfigWithSingleExistingConfig = {...any.simpleObject(), extends: any.word()};
@@ -28,28 +30,28 @@ suite('config lifter', () => {
     sandbox = sinon.createSandbox();
 
     sandbox.stub(fs, 'readFile');
-    sandbox.stub(fs, 'writeFile');
     sandbox.stub(yaml, 'load');
     sandbox.stub(core, 'fileExists');
+    sandbox.stub(core, 'writeConfigFile');
     sandbox.stub(scopeExtractor, 'default');
 
-    fs.readFile.withArgs(pathToConfig, 'utf-8').resolves(existingYaml);
+    fs.readFile.withArgs(`${projectRoot}/.eslintrc.yml`, 'utf-8').resolves(existingYaml);
   });
 
   teardown(() => sandbox.restore());
 
   test('that no additional extension is applied when no additional configs are provided', async () => {
-    assert.deepEqual(await liftEslint({pathToConfig}), {});
+    assert.deepEqual(await liftEslint({projectRoot}), {});
     assert.notCalled(fs.readFile);
-    assert.notCalled(fs.writeFile);
+    assert.notCalled(core.writeConfigFile);
     assert.notCalled(yaml.load);
     assert.notCalled(scopeExtractor.default);
   });
 
   test('that no additional extension is applied when an empty list of additional configs is provided', async () => {
-    assert.deepEqual(await liftEslint({configs: [], pathToConfig}), {});
+    assert.deepEqual(await liftEslint({configs: [], projectRoot}), {});
     assert.notCalled(fs.readFile);
-    assert.notCalled(fs.writeFile);
+    assert.notCalled(core.writeConfigFile);
     assert.notCalled(yaml.load);
     assert.notCalled(scopeExtractor.default);
   });
@@ -59,16 +61,20 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
     scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, projectRoot});
 
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config}`));
     assert.calledWith(
-      fs.writeFile,
-      pathToConfig,
-      yaml.dump({
-        ...existingConfigWithSingleExistingConfig,
-        extends: [existingConfigWithSingleExistingConfig.extends, ...configs.map(config => `${scope}/${config}`)]
-      })
+      core.writeConfigFile,
+      {
+        path: projectRoot,
+        name: '.eslintrc',
+        format: core.fileTypes.YAML,
+        config: {
+          ...existingConfigWithSingleExistingConfig,
+          extends: [existingConfigWithSingleExistingConfig.extends, ...configs.map(config => `${scope}/${config}`)]
+        }
+      }
     );
   });
 
@@ -78,19 +84,23 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, projectRoot});
 
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config}`));
     assert.calledWith(
-      fs.writeFile,
-      pathToConfig,
-      yaml.dump({
-        ...existingConfigWithMultipleExistingConfigs,
-        extends: [
-          ...existingConfigWithMultipleExistingConfigs.extends,
-          ...configsWithoutDuplicate.map(config => `${scope}/${config}`)
-        ]
-      })
+      core.writeConfigFile,
+      {
+        path: projectRoot,
+        name: '.eslintrc',
+        format: core.fileTypes.YAML,
+        config: {
+          ...existingConfigWithMultipleExistingConfigs,
+          extends: [
+            ...existingConfigWithMultipleExistingConfigs.extends,
+            ...configsWithoutDuplicate.map(config => `${scope}/${config}`)
+          ]
+        }
+      }
     );
   });
 
@@ -99,19 +109,23 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, projectRoot});
 
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
     assert.calledWith(
-      fs.writeFile,
-      pathToConfig,
-      yaml.dump({
-        ...existingConfigWithMultipleExistingConfigs,
-        extends: [
-          ...existingConfigWithMultipleExistingConfigs.extends,
-          ...configs.map(config => `${scope}/${config.name}`)
-        ]
-      })
+      core.writeConfigFile,
+      {
+        path: projectRoot,
+        name: '.eslintrc',
+        format: core.fileTypes.YAML,
+        config: {
+          ...existingConfigWithMultipleExistingConfigs,
+          extends: [
+            ...existingConfigWithMultipleExistingConfigs.extends,
+            ...configs.map(config => `${scope}/${config.name}`)
+          ]
+        }
+      }
     );
   });
 
@@ -120,17 +134,21 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
     scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, projectRoot});
 
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
     assert.calledWith(
-      fs.writeFile,
-      pathToConfig,
-      yaml.dump({
-        ...existingConfigWithSingleExistingConfig,
-        extends: existingConfigWithSingleExistingConfig.extends,
-        overrides: configs.map(config => ({extends: `${scope}/${config.name}`, files: config.files}))
-      })
+      core.writeConfigFile,
+      {
+        path: projectRoot,
+        name: '.eslintrc',
+        format: core.fileTypes.YAML,
+        config: {
+          ...existingConfigWithSingleExistingConfig,
+          extends: existingConfigWithSingleExistingConfig.extends,
+          overrides: configs.map(config => ({extends: `${scope}/${config.name}`, files: config.files}))
+        }
+      }
     );
   });
 
@@ -139,20 +157,24 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithOverrides);
     scopeExtractor.default.withArgs(existingConfigWithOverrides).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, pathToConfig});
+    const {devDependencies} = await liftEslint({configs, projectRoot});
 
     assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
     assert.calledWith(
-      fs.writeFile,
-      pathToConfig,
-      yaml.dump({
-        ...existingConfigWithOverrides,
-        extends: existingConfigWithOverrides.extends,
-        overrides: [
-          ...existingConfigWithOverrides.overrides,
-          ...configs.map(config => ({extends: `${scope}/${config.name}`, files: config.files}))
-        ]
-      })
+      core.writeConfigFile,
+      {
+        path: projectRoot,
+        name: '.eslintrc',
+        format: core.fileTypes.YAML,
+        config: {
+          ...existingConfigWithOverrides,
+          extends: existingConfigWithOverrides.extends,
+          overrides: [
+            ...existingConfigWithOverrides.overrides,
+            ...configs.map(config => ({extends: `${scope}/${config.name}`, files: config.files}))
+          ]
+        }
+      }
     );
   });
 });
