@@ -1,10 +1,10 @@
 import {promises as fsPromises} from 'fs';
-import * as core from '@form8ion/core';
 
 import {assert} from 'chai';
 import any from '@travi/any';
 import sinon from 'sinon';
 
+import * as configScaffolder from './config/scaffolder';
 import scaffold from './scaffolder';
 
 suite('scaffolder', () => {
@@ -16,7 +16,7 @@ suite('scaffolder', () => {
     sandbox = sinon.createSandbox();
 
     sandbox.stub(fsPromises, 'writeFile');
-    sandbox.stub(core, 'writeConfigFile');
+    sandbox.stub(configScaffolder, 'default');
   });
 
   teardown(() => sandbox.restore());
@@ -49,10 +49,7 @@ suite('scaffolder', () => {
     test('that the base config is added to the root of the project if the config scope is provided', async () => {
       await scaffold({projectRoot, scope});
 
-      assert.calledWith(
-        core.writeConfigFile,
-        {path: projectRoot, name: '.eslintrc', format: core.fileTypes.YAML, config: {root: true, extends: scope}}
-      );
+      assert.calledWith(configScaffolder.default, {projectRoot, scope});
     });
 
     suite('eslint-ignore', () => {

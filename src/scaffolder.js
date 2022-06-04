@@ -1,15 +1,9 @@
 import {promises as fsPromises} from 'fs';
-import {fileTypes} from '@form8ion/core';
-import {write} from '@form8ion/config-file';
+import {scaffold as scaffoldConfig} from './config';
 
 export default async function ({projectRoot, scope, ignore: {directories = []} = {}}) {
   await Promise.all([
-    write({
-      format: fileTypes.YAML,
-      path: projectRoot,
-      name: 'eslint',
-      config: {root: true, extends: scope}
-    }),
+    scaffoldConfig({projectRoot, scope}),
     fsPromises.writeFile(`${projectRoot}/.eslintignore`, directories.join('\n'))
   ]);
 

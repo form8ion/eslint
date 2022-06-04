@@ -1,8 +1,7 @@
 import {promises as fs} from 'fs';
 import {load} from 'js-yaml';
 import {info} from '@travi/cli-messages';
-import {fileTypes} from '@form8ion/core';
-import {write} from '@form8ion/config-file';
+import write from './writer';
 
 import extractScopeFrom from '../scope-extractor';
 
@@ -59,8 +58,6 @@ export default async function ({configs, projectRoot}) {
   await write(
     {
       path: projectRoot,
-      name: 'eslint',
-      format: fileTypes.YAML,
       config: {
         ...existingConfig,
         extends: normalizedNonOverrideConfigBasenames.length

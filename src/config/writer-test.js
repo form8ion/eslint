@@ -24,6 +24,6 @@ suite('config writer', () => {
 
     await writeConfig({path, config});
 
-    assert.calledWith(configFile.write, {name: 'eslint', format: fileTypes.JSON, path, config});
+    assert.calledWith(configFile.write, {name: 'eslint', format: fileTypes.YAML, path, config});
   });
 });
