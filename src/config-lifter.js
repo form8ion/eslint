@@ -1,7 +1,8 @@
 import {promises as fs} from 'fs';
 import {load} from 'js-yaml';
 import {info} from '@travi/cli-messages';
-import {fileTypes, writeConfigFile} from '@form8ion/core';
+import {fileTypes} from '@form8ion/core';
+import {write} from '@form8ion/config-file';
 
 import extractScopeFrom from './scope-extractor';
 
@@ -32,8 +33,7 @@ function noAdditionalConfigsWereProvided(configs) {
 export default async function ({configs, projectRoot}) {
   info('Configuring ESLint', {level: 'secondary'});
 
-  const configFileName = '.eslintrc';
-  const pathToConfig = `${projectRoot}/${configFileName}.yml`;
+  const pathToConfig = `${projectRoot}/.eslintrc.yml`;
 
   if (noAdditionalConfigsWereProvided(configs)) {
     info('No additional ESLint configs provided', {level: 'secondary'});
@@ -56,10 +56,10 @@ export default async function ({configs, projectRoot}) {
       .map(({name, files}) => ({extends: mapConfigBasenameToConfigShortName(name), files}))
   ];
 
-  await writeConfigFile(
+  await write(
     {
       path: projectRoot,
-      name: configFileName,
+      name: 'eslint',
       format: fileTypes.YAML,
       config: {
         ...existingConfig,
