@@ -1,6 +1,6 @@
 import {fileExists} from '@form8ion/core';
 import {warn} from '@travi/cli-messages';
-import liftConfig from './config-lifter';
+import {lift as liftConfig} from './config';
 
 export default async function ({projectRoot, configs}) {
   if (!await fileExists(`${projectRoot}/.eslintrc.yml`)) {

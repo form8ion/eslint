@@ -2,7 +2,7 @@ import * as core from '@form8ion/core';
 import {assert} from 'chai';
 import sinon from 'sinon';
 import any from '@travi/any';
-import * as configLifter from './config-lifter';
+import * as configLifter from './config/lifter';
 import lift from './lifter';
 
 suite('lifter', () => {

@@ -6,8 +6,8 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 import any from '@travi/any';
 
-import liftEslint from './config-lifter';
-import * as scopeExtractor from './scope-extractor';
+import liftEslint from './lifter';
+import * as scopeExtractor from '../scope-extractor';
 
 suite('config lifter', () => {
   let sandbox;

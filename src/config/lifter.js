@@ -4,7 +4,7 @@ import {info} from '@travi/cli-messages';
 import {fileTypes} from '@form8ion/core';
 import {write} from '@form8ion/config-file';
 
-import extractScopeFrom from './scope-extractor';
+import extractScopeFrom from '../scope-extractor';
 
 function normalizeConfigBasename(config) {
   if ('string' === typeof config) return config;
