@@ -83,7 +83,7 @@
   },
   "dependencies": {
     "@form8ion/config-file": "^1.0.0",
-    "@form8ion/core": "^1.7.0",
+    "@form8ion/core": "^2.0.0",
     "@travi/cli-messages": "^1.0.5",
     "js-yaml": "^4.1.0"
   }
