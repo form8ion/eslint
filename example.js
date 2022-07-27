@@ -11,5 +11,5 @@ stubbedFs();
 (async () => {
   await scaffold({projectRoot: process.cwd(), scope: '@foo', ignore: {directories: []}});
 
-  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react']});
+  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react'], buildDirectory: 'lib'});
 })();
