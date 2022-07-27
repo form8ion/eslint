@@ -49,4 +49,15 @@ suite('lift ignore', () => {
     assert.deepEqual(results, {});
     assert.calledWith(fs.writeFile, pathToIgnoreFile, [...existingIgnores, buildDirectory].join(EOL));
   });
+
+  test('that the build directory is not added as an ignore if already contained in the ignore file', async () => {
+    const existingIgnores = any.listOf(any.word);
+    core.fileExists.withArgs(pathToIgnoreFile).resolves(true);
+    fs.readFile.withArgs(pathToIgnoreFile, 'utf-8').resolves([buildDirectory, ...existingIgnores].join(EOL));
+
+    const results = await liftIgnore({projectRoot, buildDirectory});
+
+    assert.deepEqual(results, {});
+    assert.calledWith(fs.writeFile, pathToIgnoreFile, [buildDirectory, ...existingIgnores].join(EOL));
+  });
 });

@@ -17,7 +17,7 @@ export default async function ({projectRoot, buildDirectory}) {
   if (await fileExists(pathToIgnoreFile)) {
     const existingIgnores = (await fs.readFile(pathToIgnoreFile, 'utf-8')).split(EOL);
 
-    await fs.writeFile(pathToIgnoreFile, [...existingIgnores, buildDirectory].join(EOL));
+    await fs.writeFile(pathToIgnoreFile, [...new Set([...existingIgnores, buildDirectory])].join(EOL));
   } else {
     await fs.writeFile(pathToIgnoreFile, buildDirectory);
   }

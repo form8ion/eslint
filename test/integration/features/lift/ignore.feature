@@ -15,7 +15,6 @@ Feature: ignores
     Then the build directory is included in the ignore file
     And the existing ignores are still included in the ignore file
 
-  @wip
   Scenario: build directory already exists in the ignore file
     Given an existing eslint config file is present
     And there is an existing ignore file
