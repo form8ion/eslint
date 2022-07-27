@@ -3,7 +3,7 @@ import {promises as fs} from 'fs';
 import {dump, load} from 'js-yaml';
 import {assert} from 'chai';
 import any from '@travi/any';
-import {eslintConfigScope, pathToYamlConfig} from './eslint-config-steps';
+import {eslintConfigScope, pathToYamlConfig} from './eslint-config-steps.mjs';
 
 Given('the existing eslint config file has no existing overrides', async function () {
   this.eslintConfigScope = eslintConfigScope;

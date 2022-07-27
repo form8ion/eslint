@@ -1,13 +1,15 @@
-import {resolve} from 'path';
+import {dirname, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {After, Before, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
 
 let scaffold, lift;
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
-Before(function () {
+Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
-  ({lift, scaffold} = require('@form8ion/eslint'));
+  ({lift, scaffold} = await import('@form8ion/eslint'));
 
   stubbedFs({node_modules: stubbedNodeModules});
 });
