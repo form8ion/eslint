@@ -3,13 +3,13 @@ import {fileURLToPath} from 'node:url';
 import {After, Before, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
 
-let scaffold, lift;
+let scaffold, lift, test;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
 Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
-  ({lift, scaffold} = await import('@form8ion/eslint'));
+  ({lift, scaffold, test} = await import('@form8ion/eslint'));
 
   stubbedFs({node_modules: stubbedNodeModules});
 });
@@ -27,9 +27,13 @@ When('the project is scaffolded', async function () {
 });
 
 When('the project is lifted', async function () {
-  this.result = await lift({
-    projectRoot: process.cwd(),
-    configs: this.additionalShareableConfigs,
-    buildDirectory: this.buildDirectory
-  });
+  const projectRoot = process.cwd();
+
+  if (await test({projectRoot})) {
+    this.result = await lift({
+      projectRoot,
+      configs: this.additionalShareableConfigs,
+      buildDirectory: this.buildDirectory
+    });
+  }
 });
