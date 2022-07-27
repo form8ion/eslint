@@ -1,7 +1,7 @@
 // #### Import
 // remark-usage-ignore-next
 import stubbedFs from 'mock-fs';
-import {lift, scaffold} from './lib/index.cjs';
+import {lift, scaffold} from './lib/index.js';
 
 // remark-usage-ignore-next
 stubbedFs();
