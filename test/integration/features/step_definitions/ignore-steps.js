@@ -37,9 +37,9 @@ Then('the build directory is included in the ignore file', async function () {
   const ignoreContents = await fs.readFile(`${process.cwd()}/.eslintignore`, 'utf-8');
   const lines = ignoreContents.split(EOL);
 
-  assert.include(lines, this.buildDirectory);
+  assert.include(lines, `/${this.buildDirectory}/`);
   assert.equal(
-    lines.filter(line => line === this.buildDirectory).length,
+    lines.filter(line => line === `/${this.buildDirectory}/`).length,
     1,
     'the build directory should only be defined as an ignore one time'
   );
