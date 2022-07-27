@@ -1,10 +1,10 @@
-import {promises as fsPromises} from 'fs';
+import {promises as fs} from 'fs';
 import {scaffold as scaffoldConfig} from './config';
 
 export default async function ({projectRoot, scope, ignore: {directories = []} = {}}) {
   await Promise.all([
     scaffoldConfig({projectRoot, scope}),
-    fsPromises.writeFile(`${projectRoot}/.eslintignore`, directories.join('\n'))
+    fs.writeFile(`${projectRoot}/.eslintignore`, directories.join('\n'))
   ]);
 
   return {

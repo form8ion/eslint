@@ -30,7 +30,7 @@ function noAdditionalConfigsWereProvided(configs) {
 }
 
 export default async function ({configs, projectRoot}) {
-  info('Configuring ESLint', {level: 'secondary'});
+  info('Lifting ESLint config', {level: 'secondary'});
 
   const pathToConfig = `${projectRoot}/.eslintrc.yml`;
 

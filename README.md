@@ -27,6 +27,7 @@ configuration for a project
 [![MIT license][license-badge]][license-link]
 [![npm][npm-badge]][npm-link]
 [![Try @form8ion/eslint on RunKit][runkit-badge]][runkit-link]
+![node][node-badge]
 
 <!--consumer-badges end -->
 
@@ -48,9 +49,9 @@ import {lift, scaffold} from '@form8ion/eslint';
 
 ```javascript
 (async () => {
-  await scaffold({projectRoot: process.cwd()});
+  await scaffold({projectRoot: process.cwd(), scope: '@foo', ignore: {directories: []}});
 
-  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react']});
+  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react'], buildDirectory: 'lib'});
 })();
 ```
 
@@ -114,3 +115,5 @@ $ npm test
 [runkit-link]: https://npm.runkit.com/@form8ion/eslint
 
 [runkit-badge]: https://badge.runkitcdn.com/@form8ion/eslint.svg
+
+[node-badge]: https://img.shields.io/node/v/@form8ion/eslint?logo=node.js
