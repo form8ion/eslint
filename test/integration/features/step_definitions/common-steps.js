@@ -43,5 +43,9 @@ When('the project is scaffolded', async function () {
 });
 
 When('the project is lifted', async function () {
-  this.result = await lift({projectRoot: process.cwd(), configs: this.additionalShareableConfigs});
+  this.result = await lift({
+    projectRoot: process.cwd(),
+    configs: this.additionalShareableConfigs,
+    buildDirectory: this.buildDirectory
+  });
 });
