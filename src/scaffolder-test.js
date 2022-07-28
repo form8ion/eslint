@@ -1,10 +1,9 @@
-import {promises as fsPromises} from 'fs';
-
 import {assert} from 'chai';
 import any from '@travi/any';
 import sinon from 'sinon';
 
 import * as configScaffolder from './config/scaffolder';
+import * as ignoreScaffolder from './ignore/scaffolder';
 import scaffold from './scaffolder';
 
 suite('scaffolder', () => {
@@ -15,8 +14,8 @@ suite('scaffolder', () => {
   setup(() => {
     sandbox = sinon.createSandbox();
 
-    sandbox.stub(fsPromises, 'writeFile');
     sandbox.stub(configScaffolder, 'default');
+    sandbox.stub(ignoreScaffolder, 'default');
   });
 
   teardown(() => sandbox.restore());
@@ -52,14 +51,12 @@ suite('scaffolder', () => {
       assert.calledWith(configScaffolder.default, {projectRoot, scope});
     });
 
-    suite('eslint-ignore', () => {
-      test('that the provided directories are excluded from linting', async () => {
-        const ignoredDirectories = any.listOf(any.string);
+    test('that the provided ignores are excluded from linting', async () => {
+      const ignore = any.simpleObject();
 
-        await scaffold({projectRoot, config: {packageName, scope}, ignore: {directories: ignoredDirectories}});
+      await scaffold({projectRoot, config: {packageName, scope}, ignore});
 
-        assert.calledWith(fsPromises.writeFile, `${projectRoot}/.eslintignore`, ignoredDirectories.join('\n'));
-      });
+      assert.calledWith(ignoreScaffolder.default, {projectRoot, ignore});
     });
   });
 });
