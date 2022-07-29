@@ -31,8 +31,10 @@ When('the project is lifted', async function () {
   if (await test({projectRoot})) {
     this.result = await lift({
       projectRoot,
-      configs: this.additionalShareableConfigs,
-      buildDirectory: this.buildDirectory
+      results: {
+        eslint: {configs: this.additionalShareableConfigs},
+        buildDirectory: this.buildDirectory
+      }
     });
   }
 });

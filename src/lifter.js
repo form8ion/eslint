@@ -1,21 +1,20 @@
 import deepmerge from 'deepmerge';
-import {fileExists} from '@form8ion/core';
-import {info, warn} from '@travi/cli-messages';
+import {info} from '@travi/cli-messages';
 
 import {lift as liftConfig} from './config';
 import {lift as liftIgnore} from './ignore';
 
-export default async function ({projectRoot, configs, buildDirectory}) {
-  if (!await fileExists(`${projectRoot}/.eslintrc.yml`)) {
-    warn('No existing configuration found for ESLint. Skipping configuration extension');
-
-    return {};
-  }
-
+export default async function ({
+  projectRoot,
+  results: {buildDirectory, /* eslintConfigs = [], */ eslint: {configs = [], ignore = {}} = {}}
+}) {
   info('Lifting ESLint');
 
+  // const normalizedConfigs = [...eslintConfigs, ...configs];
+  const normalizedConfigs = [...configs];
+
   return deepmerge.all(await Promise.all([
-    liftConfig({configs, projectRoot}),
-    liftIgnore({projectRoot, buildDirectory})
+    liftConfig({configs: normalizedConfigs, projectRoot}),
+    liftIgnore({projectRoot, ignore, buildDirectory})
   ]));
 }
