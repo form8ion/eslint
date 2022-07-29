@@ -21,8 +21,7 @@ After(function () {
 When('the project is scaffolded', async function () {
   await scaffold({
     projectRoot: process.cwd(),
-    scope: this.eslintConfigScope,
-    ignore: {directories: this.ignoredDirectories}
+    config: {scope: this.eslintConfigScope}
   });
 });
 

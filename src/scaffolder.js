@@ -1,11 +1,7 @@
 import {scaffold as scaffoldConfig} from './config';
-import {scaffold as scaffoldIgnore} from './ignore';
 
-export default async function ({projectRoot, scope, ignore}) {
-  await Promise.all([
-    scaffoldConfig({projectRoot, scope}),
-    scaffoldIgnore({projectRoot, ignore})
-  ]);
+export default async function ({projectRoot, config: {scope}}) {
+  await scaffoldConfig({projectRoot, scope});
 
   return {
     devDependencies: [`${scope}/eslint-config`],
