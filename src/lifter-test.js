@@ -12,6 +12,7 @@ import lift from './lifter';
 suite('lifter', () => {
   let sandbox;
   const configs = any.listOf(any.word);
+  const ignore = any.simpleObject();
   const projectRoot = any.string();
   const buildDirectory = any.string();
 
@@ -32,15 +33,18 @@ suite('lifter', () => {
     const ignoreResults = any.simpleObject();
     core.fileExists.withArgs(`${projectRoot}/.eslintrc.yml`).resolves(true);
     configLifter.default.withArgs({configs, projectRoot}).resolves(configResults);
-    ignoreLifter.default.withArgs({projectRoot, buildDirectory}).resolves(ignoreResults);
+    ignoreLifter.default.withArgs({projectRoot, buildDirectory, ignore}).resolves(ignoreResults);
     deepmerge.all.withArgs([configResults, ignoreResults]).returns(results);
 
-    assert.deepEqual(await lift({configs, projectRoot, buildDirectory}), results);
+    assert.deepEqual(
+      await lift({projectRoot, results: {eslint: {configs, ignore}, buildDirectory}}),
+      results
+    );
   });
 
-  test('that no changes made when no config exists', async () => {
-    core.fileExists.withArgs(`${projectRoot}/.eslintrc.yml`).resolves(false);
+  test('that `eslint` not existing in the results does not result in an error', async () => {
+    await lift({projectRoot, results: {buildDirectory}});
 
-    assert.deepEqual(await lift({configs, projectRoot}), {});
+    assert.calledWith(ignoreLifter.default, {projectRoot, buildDirectory, ignore: {}});
   });
 });

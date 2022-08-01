@@ -21,7 +21,7 @@ suite('scaffolder', () => {
   teardown(() => sandbox.restore());
 
   test('that the dependency is installed if the config is defined', async () => {
-    const result = await scaffold({scope});
+    const result = await scaffold({config: {scope}});
 
     assert.deepEqual(result.devDependencies, [`${scope}/eslint-config`]);
   });
@@ -42,21 +42,11 @@ suite('scaffolder', () => {
     assert.deepEqual(result.vcsIgnore.files, ['.eslintcache']);
   });
 
-  suite('config', () => {
+  test('that the base config is added to the root of the project if the config scope is provided', async () => {
     const projectRoot = any.string();
 
-    test('that the base config is added to the root of the project if the config scope is provided', async () => {
-      await scaffold({projectRoot, scope});
+    await scaffold({projectRoot, config: {scope}});
 
-      assert.calledWith(configScaffolder.default, {projectRoot, scope});
-    });
-
-    test('that the provided ignores are excluded from linting', async () => {
-      const ignore = any.simpleObject();
-
-      await scaffold({projectRoot, config: {packageName, scope}, ignore});
-
-      assert.calledWith(ignoreScaffolder.default, {projectRoot, ignore});
-    });
+    assert.calledWith(configScaffolder.default, {projectRoot, scope});
   });
 });

@@ -21,8 +21,7 @@ After(function () {
 When('the project is scaffolded', async function () {
   await scaffold({
     projectRoot: process.cwd(),
-    scope: this.eslintConfigScope,
-    ignore: {directories: this.ignoredDirectories}
+    config: {scope: this.eslintConfigScope}
   });
 });
 
@@ -32,8 +31,10 @@ When('the project is lifted', async function () {
   if (await test({projectRoot})) {
     this.result = await lift({
       projectRoot,
-      configs: this.additionalShareableConfigs,
-      buildDirectory: this.buildDirectory
+      results: {
+        eslint: {configs: this.additionalShareableConfigs, ignore: {directories: this.ignoredDirectories}},
+        buildDirectory: this.buildDirectory
+      }
     });
   }
 });

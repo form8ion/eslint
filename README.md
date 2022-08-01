@@ -49,9 +49,15 @@ import {lift, scaffold} from '@form8ion/eslint';
 
 ```javascript
 (async () => {
-  await scaffold({projectRoot: process.cwd(), scope: '@foo', ignore: {directories: []}});
+  await scaffold({projectRoot: process.cwd(), config: {scope: '@foo'}});
 
-  await lift({projectRoot: process.cwd(), configs: ['mocha', 'react'], buildDirectory: 'lib'});
+  await lift({
+    projectRoot: process.cwd(),
+    results: {
+      eslint: {configs: ['mocha', 'react'], ignore: {directories: []}},
+      buildDirectory: 'lib'
+    }
+  });
 })();
 ```
 
