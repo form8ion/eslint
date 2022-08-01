@@ -24,15 +24,18 @@ suite('lift ignore', () => {
 
   teardown(() => sandbox.restore());
 
-  test('that no updates are made to the ignore file if no build directory is provided', async () => {
-    const results = await liftIgnore({projectRoot});
+  test(
+    'that no updates are made to the ignore file if no build directory or directories to ignore are provided',
+    async () => {
+      const results = await liftIgnore({projectRoot});
 
-    assert.deepEqual(results, {});
-    assert.notCalled(core.fileExists);
-  });
+      assert.deepEqual(results, {});
+      assert.notCalled(core.fileExists);
+    }
+  );
 
   test('that the provided build directory is added to the ignore file', async () => {
-    core.fileExists.withArgs(pathToIgnoreFile).resolves(false);
+    core.fileExists.resolves(false);
     const results = await liftIgnore({projectRoot, buildDirectory});
 
     assert.deepEqual(results, {});
@@ -59,5 +62,25 @@ suite('lift ignore', () => {
 
     assert.deepEqual(results, {});
     assert.calledWith(fs.writeFile, pathToIgnoreFile, [`/${buildDirectory}/`, ...existingIgnores].join(EOL));
+  });
+
+  test('that provided directories are ignored', async () => {
+    const directoriesToIgnore = any.listOf(any.string);
+    core.fileExists.resolves(false);
+
+    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}});
+
+    assert.deepEqual(results, {});
+    assert.calledWith(fs.writeFile, pathToIgnoreFile, directoriesToIgnore.join(EOL));
+  });
+
+  test('that provided directories and `buildDirectory` are ignored', async () => {
+    const directoriesToIgnore = any.listOf(any.string);
+    core.fileExists.resolves(false);
+
+    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}, buildDirectory});
+
+    assert.deepEqual(results, {});
+    assert.calledWith(fs.writeFile, pathToIgnoreFile, [`/${buildDirectory}/`, ...directoriesToIgnore].join(EOL));
   });
 });

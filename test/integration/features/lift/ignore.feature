@@ -23,3 +23,10 @@ Feature: ignores
     When the project is lifted
     Then the build directory is included in the ignore file
     And the existing ignores are still included in the ignore file
+
+  Scenario: ignored directories are defined in the provided results
+    Given an existing eslint config file is present
+    And there is no ignore file
+    And ignored directories are provided
+    When the project is lifted
+    Then the provided directories are ignored
