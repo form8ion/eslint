@@ -6,15 +6,12 @@ import {lift as liftIgnore} from './ignore';
 
 export default async function ({
   projectRoot,
-  results: {buildDirectory, /* eslintConfigs = [], */ eslint: {configs = [], ignore = {}} = {}}
+  results: {buildDirectory, eslint: {configs = [], ignore = {}} = {}}
 }) {
   info('Lifting ESLint');
 
-  // const normalizedConfigs = [...eslintConfigs, ...configs];
-  const normalizedConfigs = [...configs];
-
   return deepmerge.all(await Promise.all([
-    liftConfig({configs: normalizedConfigs, projectRoot}),
+    liftConfig({configs, projectRoot}),
     liftIgnore({projectRoot, ignore, buildDirectory})
   ]));
 }
