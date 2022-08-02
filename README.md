@@ -11,6 +11,9 @@ configuration for a project
 
 ## Table of Contents
 
+* [Features](#features)
+  * [Scaffolder](#scaffolder)
+  * [Lifter](#lifter)
 * [Usage](#usage)
   * [Installation](#installation)
   * [Example](#example)
@@ -19,6 +22,23 @@ configuration for a project
 * [Contributing](#contributing)
   * [Dependencies](#dependencies)
   * [Verification](#verification)
+
+## Features
+
+### Scaffolder
+
+* creates an initial `.eslintrc.yml` config file for the project
+* extends the base shareable eslint-config package defined by `config.scope`
+* defines the lint and fix scripts
+* ignores the cache file from the VCS
+
+### Lifter
+
+* ignores linting of paths defined in
+  * `results.buildDirectory`
+  * `results.eslint.ignore.directories`
+* extends configs defined in `results.eslint.configs`, using the scope of the
+  base config already defined in the `.eslintrc.yml`
 
 ## Usage
 
