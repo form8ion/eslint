@@ -1,6 +1,6 @@
-import {EOL} from 'os';
-import {promises as fs} from 'fs';
-import * as core from '@form8ion/core';
+import {EOL} from 'node:os';
+import {promises as fs} from 'node:fs';
+import core from '@form8ion/core';
 
 import any from '@travi/any';
 import sinon from 'sinon';
