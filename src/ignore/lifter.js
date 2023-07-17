@@ -1,5 +1,5 @@
-import {promises as fs} from 'fs';
-import {EOL} from 'os';
+import {promises as fs} from 'node:fs';
+import {EOL} from 'node:os';
 import {info} from '@travi/cli-messages';
 import {fileExists} from '@form8ion/core';
 
