@@ -1,9 +1,9 @@
 import {promises as fs} from 'fs';
 import {load} from 'js-yaml';
 import {info} from '@travi/cli-messages';
-import write from './writer';
 
-import extractScopeFrom from '../scope-extractor';
+import write from './writer.js';
+import extractScopeFrom from '../scope-extractor.js';
 
 function normalizeConfigBasename(config) {
   if ('string' === typeof config) return config;

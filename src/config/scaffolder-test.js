@@ -2,8 +2,8 @@ import any from '@travi/any';
 import sinon from 'sinon';
 import {assert} from 'chai';
 
-import * as writer from './writer';
-import scaffold from './scaffolder';
+import * as writer from './writer.js';
+import scaffold from './scaffolder.js';
 
 suite('config scaffolder', () => {
   let sandbox;

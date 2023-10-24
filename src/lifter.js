@@ -1,8 +1,8 @@
 import deepmerge from 'deepmerge';
 import {info} from '@travi/cli-messages';
 
-import {lift as liftConfig} from './config';
-import {lift as liftIgnore} from './ignore';
+import {lift as liftConfig} from './config/index.js';
+import {lift as liftIgnore} from './ignore/index.js';
 
 export default async function ({
   projectRoot,

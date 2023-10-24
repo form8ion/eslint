@@ -2,9 +2,9 @@ import {assert} from 'chai';
 import any from '@travi/any';
 import sinon from 'sinon';
 
-import * as configScaffolder from './config/scaffolder';
-import * as ignoreScaffolder from './ignore/scaffolder';
-import scaffold from './scaffolder';
+import * as configScaffolder from './config/scaffolder.js';
+import * as ignoreScaffolder from './ignore/scaffolder.js';
+import scaffold from './scaffolder.js';
 
 suite('scaffolder', () => {
   let sandbox;

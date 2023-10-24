@@ -4,7 +4,7 @@ import any from '@travi/any';
 import sinon from 'sinon';
 import {assert} from 'chai';
 
-import scaffold from './scaffolder';
+import scaffold from './scaffolder.js';
 
 suite('ignore file scaffolder', () => {
   let sandbox;
