@@ -6,6 +6,7 @@ configuration for a project
 <!--status-badges start -->
 
 [![Node CI Workflow Status][github-actions-ci-badge]][github-actions-ci-link]
+[![Codecov][coverage-badge]][coverage-link]
 
 <!--status-badges end -->
 
@@ -143,3 +144,7 @@ $ npm test
 [runkit-badge]: https://badge.runkitcdn.com/@form8ion/eslint.svg
 
 [node-badge]: https://img.shields.io/node/v/@form8ion/eslint?logo=node.js
+
+[coverage-link]: https://codecov.io/github/form8ion/eslint
+
+[coverage-badge]: https://img.shields.io/codecov/c/github/form8ion/eslint?logo=codecov
