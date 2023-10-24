@@ -6,7 +6,7 @@ import any from '@travi/any';
 import sinon from 'sinon';
 import {assert} from 'chai';
 
-import liftIgnore from './lifter';
+import liftIgnore from './lifter.js';
 
 suite('lift ignore', () => {
   let sandbox;

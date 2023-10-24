@@ -5,9 +5,9 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 import any from '@travi/any';
 
-import * as configLifter from './config/lifter';
-import * as ignoreLifter from './ignore/lifter';
-import lift from './lifter';
+import * as configLifter from './config/lifter.js';
+import * as ignoreLifter from './ignore/lifter.js';
+import lift from './lifter.js';
 
 suite('lifter', () => {
   let sandbox;

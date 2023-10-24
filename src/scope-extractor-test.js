@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 import any from '@travi/any';
-import extractScope from './scope-extractor';
+
+import extractScope from './scope-extractor.js';
 
 suite('scope extractor', () => {
   const scope = any.word();

@@ -6,9 +6,9 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 import any from '@travi/any';
 
-import * as scopeExtractor from '../scope-extractor';
-import * as configWriter from './writer';
-import liftEslint from './lifter';
+import * as scopeExtractor from '../scope-extractor.js';
+import * as configWriter from './writer.js';
+import liftEslint from './lifter.js';
 
 suite('config lifter', () => {
   let sandbox;

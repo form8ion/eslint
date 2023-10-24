@@ -4,7 +4,7 @@ import {assert} from 'chai';
 import any from '@travi/any';
 import sinon from 'sinon';
 
-import configFileExists from './predicate';
+import configFileExists from './predicate.js';
 
 suite('predicate', () => {
   const projectRoot = any.string();
