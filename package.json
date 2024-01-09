@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@form8ion/config-file": "^1.0.0",
-    "@form8ion/core": "^3.0.0",
+    "@form8ion/core": "^4.0.0",
     "@travi/cli-messages": "^1.0.5",
     "deepmerge": "^4.2.2",
     "js-yaml": "^4.1.0"
