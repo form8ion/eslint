@@ -31,7 +31,7 @@ suite('scaffolder', () => {
       (await scaffold({config: {packageName}})).scripts,
       {
         'lint:js': 'eslint . --cache',
-        'lint:js:fix': 'run-s lint:js -- --fix'
+        'lint:js:fix': "run-s 'lint:js -- --fix'"
       }
     );
   });
