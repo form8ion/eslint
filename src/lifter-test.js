@@ -28,17 +28,23 @@ suite('lifter', () => {
   teardown(() => sandbox.restore());
 
   test('that the existing config is lifted', async () => {
-    const results = any.simpleObject();
+    const mergedResults = any.simpleObject();
     const configResults = any.simpleObject();
     const ignoreResults = any.simpleObject();
     core.fileExists.withArgs(`${projectRoot}/.eslintrc.yml`).resolves(true);
     configLifter.default.withArgs({configs, projectRoot}).resolves(configResults);
     ignoreLifter.default.withArgs({projectRoot, buildDirectory, ignore}).resolves(ignoreResults);
-    deepmerge.all.withArgs([configResults, ignoreResults]).returns(results);
+    deepmerge.all
+      .withArgs([
+        configResults,
+        ignoreResults,
+        {scripts: {'lint:js': 'eslint . --cache', 'lint:js:fix': "run-s 'lint:js -- --fix'"}}
+      ])
+      .returns(mergedResults);
 
     assert.deepEqual(
       await lift({projectRoot, results: {eslint: {configs, ignore}, buildDirectory}}),
-      results
+      mergedResults
     );
   });
 

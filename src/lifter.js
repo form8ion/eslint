@@ -10,8 +10,11 @@ export default async function ({
 }) {
   info('Lifting ESLint');
 
-  return deepmerge.all(await Promise.all([
-    liftConfig({configs, projectRoot}),
-    liftIgnore({projectRoot, ignore, buildDirectory})
-  ]));
+  return deepmerge.all([
+    ...await Promise.all([
+      liftConfig({configs, projectRoot}),
+      liftIgnore({projectRoot, ignore, buildDirectory})
+    ]),
+    {scripts: {'lint:js': 'eslint . --cache', 'lint:js:fix': "run-s 'lint:js -- --fix'"}}
+  ]);
 }
