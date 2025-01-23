@@ -23,7 +23,7 @@ suite('scaffolder', () => {
   test('that the dependency is installed if the config is defined', async () => {
     const result = await scaffold({config: {scope}});
 
-    assert.deepEqual(result.devDependencies, [`${scope}/eslint-config`]);
+    assert.deepEqual(result.dependencies.javascript.development, [`${scope}/eslint-config`]);
   });
 
   test('that the cache file is ignored from version control', async () => {
