@@ -62,9 +62,9 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
     scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot});
 
-    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config}`));
+    assert.deepEqual(dependencies.javascript.development, configs.map(config => `${scope}/eslint-config-${config}`));
     assert.calledWith(
       configWriter.default,
       {
@@ -83,9 +83,9 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot});
 
-    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config}`));
+    assert.deepEqual(dependencies.javascript.development, configs.map(config => `${scope}/eslint-config-${config}`));
     assert.calledWith(
       configWriter.default,
       {
@@ -106,9 +106,12 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithMultipleExistingConfigs);
     scopeExtractor.default.withArgs(existingConfigWithMultipleExistingConfigs).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot});
 
-    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
+    assert.deepEqual(
+      dependencies.javascript.development,
+      configs.map(config => `${scope}/eslint-config-${config.name}`)
+    );
     assert.calledWith(
       configWriter.default,
       {
@@ -129,9 +132,12 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithSingleExistingConfig);
     scopeExtractor.default.withArgs(existingConfigWithSingleExistingConfig).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot});
 
-    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
+    assert.deepEqual(
+      dependencies.javascript.development,
+      configs.map(config => `${scope}/eslint-config-${config.name}`)
+    );
     assert.calledWith(
       configWriter.default,
       {
@@ -150,9 +156,12 @@ suite('config lifter', () => {
     yaml.load.withArgs(existingYaml).returns(existingConfigWithOverrides);
     scopeExtractor.default.withArgs(existingConfigWithOverrides).returns(scope);
 
-    const {devDependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot});
 
-    assert.deepEqual(devDependencies, configs.map(config => `${scope}/eslint-config-${config.name}`));
+    assert.deepEqual(
+      dependencies.javascript.development,
+      configs.map(config => `${scope}/eslint-config-${config.name}`)
+    );
     assert.calledWith(
       configWriter.default,
       {
