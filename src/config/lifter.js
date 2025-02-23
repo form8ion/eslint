@@ -71,5 +71,5 @@ export default async function ({configs, projectRoot}) {
     }
   );
 
-  return {devDependencies: normalizedConfigBasenames.map(mapConfigNameToPackageName)};
+  return {dependencies: {javascript: {development: normalizedConfigBasenames.map(mapConfigNameToPackageName)}}};
 }

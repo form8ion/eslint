@@ -4,7 +4,7 @@ export default async function ({projectRoot, config: {scope}}) {
   await scaffoldConfig({projectRoot, scope});
 
   return {
-    devDependencies: [`${scope}/eslint-config`],
+    dependencies: {javascript: {development: [`${scope}/eslint-config`]}},
     vcsIgnore: {files: ['.eslintcache']}
   };
 }

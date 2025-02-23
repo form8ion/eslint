@@ -78,7 +78,7 @@ Then('the yaml eslint config file contains the expected config', async function 
 
 Then('dependencies are defined for the additional configs', async function () {
   assert.deepEqual(
-    this.result.devDependencies,
+    this.result.dependencies.javascript.development,
     this.additionalShareableConfigs.map(config => {
       if ('string' === typeof config) return `${this.eslintConfigScope}/eslint-config-${config}`;
 
