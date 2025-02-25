@@ -6,10 +6,12 @@ import {describe, it, expect, vi} from 'vitest';
 // eslint-disable-next-line import/no-unresolved
 import {when} from 'vitest-when';
 
+import writeIgnoreFile from './writer.js';
 import ignoreFileExists from './predicate.js';
 import liftIgnore from './lifter.js';
 
 vi.mock('node:fs');
+vi.mock('./writer.js');
 vi.mock('./predicate.js');
 
 describe('ignore file lifter', () => {
@@ -34,7 +36,7 @@ describe('ignore file lifter', () => {
     const results = await liftIgnore({projectRoot, buildDirectory});
 
     expect(results).toEqual({});
-    expect(fs.writeFile).toHaveBeenCalledWith(pathToIgnoreFile, `/${buildDirectory}/`);
+    expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: [`/${buildDirectory}/`]});
   });
 
   it('should not lose the existing contents of the ignore file when adding the build directory', async () => {
@@ -45,7 +47,7 @@ describe('ignore file lifter', () => {
     const results = await liftIgnore({projectRoot, buildDirectory});
 
     expect(results).toEqual({});
-    expect(fs.writeFile).toHaveBeenCalledWith(pathToIgnoreFile, [...existingIgnores, `/${buildDirectory}/`].join(EOL));
+    expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: [...existingIgnores, `/${buildDirectory}/`]});
   });
 
   it('should ignore provided directories', async () => {
@@ -54,7 +56,7 @@ describe('ignore file lifter', () => {
     const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}});
 
     expect(results).toEqual({});
-    expect(fs.writeFile).toHaveBeenCalledWith(pathToIgnoreFile, directoriesToIgnore.join(EOL));
+    expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: directoriesToIgnore});
   });
 
   it('should ignore provided directories and `buildDirectory`', async () => {
@@ -63,10 +65,10 @@ describe('ignore file lifter', () => {
     const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}, buildDirectory});
 
     expect(results).toEqual({});
-    expect(fs.writeFile).toHaveBeenCalledWith(
-      pathToIgnoreFile,
-      [`/${buildDirectory}/`, ...directoriesToIgnore].join(EOL)
-    );
+    expect(writeIgnoreFile).toHaveBeenCalledWith({
+      projectRoot,
+      ignores: [`/${buildDirectory}/`, ...directoriesToIgnore]
+    });
   });
 
   it('should not lose the existing contents when adding ignored directories', async () => {
@@ -77,22 +79,6 @@ describe('ignore file lifter', () => {
     const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}});
 
     expect(results).toEqual({});
-    expect(fs.writeFile).toHaveBeenCalledWith(pathToIgnoreFile, [...existingIgnores, ...directoriesToIgnore].join(EOL));
-  });
-
-  it('should not add the provided ignores if already contained in the ignore file', async () => {
-    const existingIgnores = any.listOf(any.word);
-    when(ignoreFileExists).calledWith({projectRoot}).thenResolve(true);
-    when(fs.readFile).calledWith(pathToIgnoreFile, 'utf-8').thenResolve(
-      [`/${buildDirectory}/`, ...directoriesToIgnore, ...existingIgnores].join(EOL)
-    );
-
-    const results = await liftIgnore({projectRoot, buildDirectory, ignore: {directories: directoriesToIgnore}});
-
-    expect(results).toEqual({});
-    expect(fs.writeFile).toHaveBeenCalledWith(
-      pathToIgnoreFile,
-      [`/${buildDirectory}/`, ...directoriesToIgnore, ...existingIgnores].join(EOL)
-    );
+    expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: [...existingIgnores, ...directoriesToIgnore]});
   });
 });

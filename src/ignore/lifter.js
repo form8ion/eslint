@@ -2,6 +2,7 @@ import {promises as fs} from 'node:fs';
 import {EOL} from 'node:os';
 import {info} from '@travi/cli-messages';
 
+import writeIgnoreFile from './writer.js';
 import ignoreFileExists from './predicate.js';
 
 export default async function ({projectRoot, ignore: {directories: directoriesToIgnore = []} = {}, buildDirectory}) {
@@ -19,9 +20,9 @@ export default async function ({projectRoot, ignore: {directories: directoriesTo
   if (await ignoreFileExists({projectRoot})) {
     const existingIgnores = (await fs.readFile(pathToIgnoreFile, 'utf-8')).split(EOL);
 
-    await fs.writeFile(pathToIgnoreFile, [...new Set([...existingIgnores, ...mergedIgnoresToAdd])].join(EOL));
+    await writeIgnoreFile({projectRoot, ignores: [...existingIgnores, ...mergedIgnoresToAdd]});
   } else {
-    await fs.writeFile(pathToIgnoreFile, mergedIgnoresToAdd.join(EOL));
+    await writeIgnoreFile({projectRoot, ignores: mergedIgnoresToAdd});
   }
 
   return {};
