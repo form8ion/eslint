@@ -1,7 +1,8 @@
 import {promises as fs} from 'node:fs';
 import {EOL} from 'node:os';
 import {info} from '@travi/cli-messages';
-import {fileExists} from '@form8ion/core';
+
+import ignoreFileExists from './predicate.js';
 
 export default async function ({projectRoot, ignore: {directories: directoriesToIgnore = []} = {}, buildDirectory}) {
   info('Lifting ESLint ignore definition', {level: 'secondary'});
@@ -15,7 +16,7 @@ export default async function ({projectRoot, ignore: {directories: directoriesTo
   const pathToIgnoreFile = `${projectRoot}/.eslintignore`;
   const mergedIgnoresToAdd = [...buildDirectory ? [`/${buildDirectory}/`] : [], ...directoriesToIgnore];
 
-  if (await fileExists(pathToIgnoreFile)) {
+  if (await ignoreFileExists({projectRoot})) {
     const existingIgnores = (await fs.readFile(pathToIgnoreFile, 'utf-8')).split(EOL);
 
     await fs.writeFile(pathToIgnoreFile, [...new Set([...existingIgnores, ...mergedIgnoresToAdd])].join(EOL));
