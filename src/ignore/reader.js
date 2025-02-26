@@ -1,8 +1,5 @@
-import {promises as fs} from 'node:fs';
-import {EOL} from 'node:os';
+import {read} from '@form8ion/ignore-file';
 
 export default async function readIgnoreFile({projectRoot}) {
-  const ignoreContent = await fs.readFile(`${projectRoot}/.eslintignore`, 'utf-8');
-
-  return ignoreContent.split(EOL);
+  return read({projectRoot, name: 'eslint'});
 }

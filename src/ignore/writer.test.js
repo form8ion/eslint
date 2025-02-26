@@ -1,12 +1,11 @@
-import {promises as fs} from 'node:fs';
-import {EOL} from 'node:os';
+import {write} from '@form8ion/ignore-file';
 
 import any from '@travi/any';
-import {it, describe, vi, expect} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 
 import writeIgnoreFile from './writer.js';
 
-vi.mock('node:fs');
+vi.mock('@form8ion/ignore-file');
 
 describe('ignore file writer', () => {
   it('should write the ignore file, removing duplicate entries', async () => {
@@ -17,9 +16,10 @@ describe('ignore file writer', () => {
 
     await writeIgnoreFile({projectRoot, ignores});
 
-    expect(fs.writeFile).toHaveBeenCalledWith(
-      `${projectRoot}/.eslintignore`,
-      [...duplicateIgnores, ...singularIgnores].join(EOL)
-    );
+    expect(write).toHaveBeenCalledWith({
+      projectRoot,
+      name: 'eslint',
+      ignores: [...duplicateIgnores, ...singularIgnores]
+    });
   });
 });

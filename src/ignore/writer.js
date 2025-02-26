@@ -1,6 +1,5 @@
-import {promises as fs} from 'node:fs';
-import {EOL} from 'node:os';
+import {write} from '@form8ion/ignore-file';
 
 export default async function writeIgnoreFile({projectRoot, ignores}) {
-  await fs.writeFile(`${projectRoot}/.eslintignore`, [...new Set(ignores)].join(EOL));
+  await write({projectRoot, name: 'eslint', ignores: [...new Set(ignores)]});
 }

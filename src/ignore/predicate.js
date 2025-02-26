@@ -1,5 +1,5 @@
-import {fileExists} from '@form8ion/core';
+import {exists} from '@form8ion/ignore-file';
 
 export default function ({projectRoot}) {
-  return fileExists(`${projectRoot}/.eslintignore`);
+  return exists({projectRoot, name: 'eslint'});
 }
