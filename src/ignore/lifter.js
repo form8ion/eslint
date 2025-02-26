@@ -1,7 +1,6 @@
-import {promises as fs} from 'node:fs';
-import {EOL} from 'node:os';
 import {info} from '@travi/cli-messages';
 
+import readIgnoreFile from './reader.js';
 import writeIgnoreFile from './writer.js';
 import ignoreFileExists from './predicate.js';
 
@@ -14,11 +13,10 @@ export default async function ({projectRoot, ignore: {directories: directoriesTo
     return {};
   }
 
-  const pathToIgnoreFile = `${projectRoot}/.eslintignore`;
   const mergedIgnoresToAdd = [...buildDirectory ? [`/${buildDirectory}/`] : [], ...directoriesToIgnore];
 
   if (await ignoreFileExists({projectRoot})) {
-    const existingIgnores = (await fs.readFile(pathToIgnoreFile, 'utf-8')).split(EOL);
+    const existingIgnores = await readIgnoreFile({projectRoot});
 
     await writeIgnoreFile({projectRoot, ignores: [...existingIgnores, ...mergedIgnoresToAdd]});
   } else {

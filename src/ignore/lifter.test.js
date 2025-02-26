@@ -1,16 +1,14 @@
-import {promises as fs} from 'node:fs';
-import {EOL} from 'node:os';
-
 import any from '@travi/any';
-import {describe, it, expect, vi} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 // eslint-disable-next-line import/no-unresolved
 import {when} from 'vitest-when';
 
+import readIgnoreFile from './reader.js';
 import writeIgnoreFile from './writer.js';
 import ignoreFileExists from './predicate.js';
 import liftIgnore from './lifter.js';
 
-vi.mock('node:fs');
+vi.mock('./reader.js');
 vi.mock('./writer.js');
 vi.mock('./predicate.js');
 
@@ -18,7 +16,6 @@ describe('ignore file lifter', () => {
   const projectRoot = any.string();
   const buildDirectory = any.string();
   const directoriesToIgnore = any.listOf(any.string);
-  const pathToIgnoreFile = `${projectRoot}/.eslintignore`;
 
   it(
     'should not make updates to the ignore file if no build directory or directories to ignore are provided',
@@ -42,7 +39,7 @@ describe('ignore file lifter', () => {
   it('should not lose the existing contents of the ignore file when adding the build directory', async () => {
     const existingIgnores = any.listOf(any.word);
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(true);
-    when(fs.readFile).calledWith(pathToIgnoreFile, 'utf-8').thenResolve(existingIgnores.join(EOL));
+    when(readIgnoreFile).calledWith({projectRoot}).thenResolve(existingIgnores);
 
     const results = await liftIgnore({projectRoot, buildDirectory});
 
@@ -74,7 +71,7 @@ describe('ignore file lifter', () => {
   it('should not lose the existing contents when adding ignored directories', async () => {
     const existingIgnores = any.listOf(any.word);
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(true);
-    when(fs.readFile).calledWith(pathToIgnoreFile, 'utf-8').thenResolve(existingIgnores.join(EOL));
+    when(readIgnoreFile).calledWith({projectRoot}).thenResolve(existingIgnores);
 
     const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}});
 
