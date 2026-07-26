@@ -5,8 +5,10 @@ import stubbedFs from 'mock-fs';
 import createDebugFor from 'debug';
 
 let scaffold, lift, test;
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
+const __dirname = dirname(fileURLToPath(import.meta.url));          // eslint-disable-line no-underscore-dangle
+const pathToProjectRoot = [__dirname, '..', '..', '..', '..'];
+const pathToNodeModules = [...pathToProjectRoot, 'node_modules'];
+const stubbedNodeModules = stubbedFs.load(resolve(...pathToNodeModules));
 const debug = createDebugFor('test:common-steps');
 const logger = {
   success: debug,
