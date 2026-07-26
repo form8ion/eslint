@@ -71,6 +71,13 @@ import {lift, scaffold} from '@form8ion/eslint';
 
 ```javascript
 (async () => {
+  const logger = {
+    info: () => undefined,
+    success: () => undefined,
+    warn: () => undefined,
+    error: () => undefined
+  };
+
   await scaffold({projectRoot: process.cwd(), config: {scope: '@foo'}});
 
   await lift({
@@ -79,7 +86,7 @@ import {lift, scaffold} from '@form8ion/eslint';
       eslint: {configs: ['mocha', 'react'], ignore: {directories: []}},
       buildDirectory: 'lib'
     }
-  });
+  }, {logger});
 })();
 ```
 

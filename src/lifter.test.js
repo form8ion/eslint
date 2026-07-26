@@ -20,14 +20,15 @@ describe('lifter', () => {
   const ignore = any.simpleObject();
   const projectRoot = any.string();
   const buildDirectory = any.string();
+  const logger = {info: () => undefined};
 
   it('should lift the existing config', async () => {
     const mergedResults = any.simpleObject();
     const configResults = any.simpleObject();
     const ignoreResults = any.simpleObject();
     when(fileExists).calledWith(`${projectRoot}/.eslintrc.yml`).thenResolve(true);
-    when(liftConfig).calledWith({configs, projectRoot}).thenResolve(configResults);
-    when(liftIgnore).calledWith({projectRoot, buildDirectory, ignore}).thenResolve(ignoreResults);
+    when(liftConfig).calledWith({configs, projectRoot}, {logger}).thenResolve(configResults);
+    when(liftIgnore).calledWith({projectRoot, buildDirectory, ignore}, {logger}).thenResolve(ignoreResults);
     when(deepmerge.all)
       .calledWith([
         configResults,
@@ -36,12 +37,13 @@ describe('lifter', () => {
       ])
       .thenReturn(mergedResults);
 
-    expect(await lift({projectRoot, results: {eslint: {configs, ignore}, buildDirectory}})).toEqual(mergedResults);
+    expect(await lift({projectRoot, results: {eslint: {configs, ignore}, buildDirectory}}, {logger}))
+      .toEqual(mergedResults);
   });
 
   it('should not result in an error when `eslint` does not exist in the results', async () => {
-    await lift({projectRoot, results: {buildDirectory}});
+    await lift({projectRoot, results: {buildDirectory}}, {logger});
 
-    expect(liftIgnore).toHaveBeenCalledWith({projectRoot, buildDirectory, ignore: {}});
+    expect(liftIgnore).toHaveBeenCalledWith({projectRoot, buildDirectory, ignore: {}}, {logger});
   });
 });

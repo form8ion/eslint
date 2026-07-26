@@ -25,13 +25,14 @@ describe('config lifter', () => {
     ...any.simpleObject(),
     extends: [...any.listOf(any.word), `${scope}/${duplicateConfig}`]
   };
+  const logger = {info: () => undefined};
 
   beforeEach(() => {
     when(fs.readFile).calledWith(`${projectRoot}/.eslintrc.yml`, 'utf-8').thenResolve(existingYaml);
   });
 
   it('should not apply additional extensions when no additional configs are provided', async () => {
-    expect(await liftEslint({projectRoot})).toEqual({});
+    expect(await liftEslint({projectRoot}, {logger})).toEqual({});
     expect(fs.readFile).not.toHaveBeenCalled();
     expect(writeConfig).not.toHaveBeenCalled();
     expect(load).not.toHaveBeenCalled();
@@ -39,7 +40,7 @@ describe('config lifter', () => {
   });
 
   it('should not apply additional extensions when an empty list of additional configs is provided', async () => {
-    expect(await liftEslint({projectRoot, configs: []})).toEqual({});
+    expect(await liftEslint({projectRoot, configs: []}, {logger})).toEqual({});
     expect(fs.readFile).not.toHaveBeenCalled();
     expect(writeConfig).not.toHaveBeenCalled();
     expect(load).not.toHaveBeenCalled();
@@ -51,7 +52,7 @@ describe('config lifter', () => {
     when(load).calledWith(existingYaml).thenReturn(existingConfigWithSingleExistingConfig);
     when(extractScopeFrom).calledWith(existingConfigWithSingleExistingConfig).thenReturn(scope);
 
-    const {dependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
 
     expect(dependencies.javascript.development).toEqual(configs.map(config => `${scope}/eslint-config-${config}`));
     expect(writeConfig).toHaveBeenCalledWith({
@@ -69,7 +70,7 @@ describe('config lifter', () => {
     when(load).calledWith(existingYaml).thenReturn(existingConfigWithMultipleExistingConfigs);
     when(extractScopeFrom).calledWith(existingConfigWithMultipleExistingConfigs).thenReturn(scope);
 
-    const {dependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
 
     expect(dependencies.javascript.development).toEqual(configs.map(config => `${scope}/eslint-config-${config}`));
     expect(writeConfig).toHaveBeenCalledWith({
@@ -89,7 +90,7 @@ describe('config lifter', () => {
     when(load).calledWith(existingYaml).thenReturn(existingConfigWithMultipleExistingConfigs);
     when(extractScopeFrom).calledWith(existingConfigWithMultipleExistingConfigs).thenReturn(scope);
 
-    const {dependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
 
     expect(dependencies.javascript.development).toEqual(configs.map(config => `${scope}/eslint-config-${config.name}`));
     expect(writeConfig).toHaveBeenCalledWith({
@@ -109,7 +110,7 @@ describe('config lifter', () => {
     when(load).calledWith(existingYaml).thenReturn(existingConfigWithSingleExistingConfig);
     when(extractScopeFrom).calledWith(existingConfigWithSingleExistingConfig).thenReturn(scope);
 
-    const {dependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
 
     expect(dependencies.javascript.development).toEqual(configs.map(config => `${scope}/eslint-config-${config.name}`));
     expect(writeConfig).toHaveBeenCalledWith({
@@ -135,7 +136,7 @@ describe('config lifter', () => {
     when(load).calledWith(existingYaml).thenReturn(existingConfigWithOverrides);
     when(extractScopeFrom).calledWith(existingConfigWithOverrides).thenReturn(scope);
 
-    const {dependencies} = await liftEslint({configs, projectRoot});
+    const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
 
     expect(dependencies.javascript.development).toEqual(configs.map(config => `${scope}/eslint-config-${config.name}`));
     expect(writeConfig).toHaveBeenCalledWith({

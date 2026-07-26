@@ -16,11 +16,12 @@ describe('ignore file lifter', () => {
   const projectRoot = any.string();
   const buildDirectory = any.string();
   const directoriesToIgnore = any.listOf(any.string);
+  const logger = {info: () => undefined};
 
   it(
     'should not make updates to the ignore file if no build directory or directories to ignore are provided',
     async () => {
-      const results = await liftIgnore({projectRoot});
+      const results = await liftIgnore({projectRoot}, {logger});
 
       expect(results).toEqual({});
       expect(ignoreFileExists).not.toHaveBeenCalled();
@@ -30,7 +31,7 @@ describe('ignore file lifter', () => {
   it('should add the provided build directory to the ignore file', async () => {
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(false);
 
-    const results = await liftIgnore({projectRoot, buildDirectory});
+    const results = await liftIgnore({projectRoot, buildDirectory}, {logger});
 
     expect(results).toEqual({});
     expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: [`/${buildDirectory}/`]});
@@ -41,7 +42,7 @@ describe('ignore file lifter', () => {
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(true);
     when(readIgnoreFile).calledWith({projectRoot}).thenResolve(existingIgnores);
 
-    const results = await liftIgnore({projectRoot, buildDirectory});
+    const results = await liftIgnore({projectRoot, buildDirectory}, {logger});
 
     expect(results).toEqual({});
     expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: [...existingIgnores, `/${buildDirectory}/`]});
@@ -50,7 +51,7 @@ describe('ignore file lifter', () => {
   it('should ignore provided directories', async () => {
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(false);
 
-    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}});
+    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}}, {logger});
 
     expect(results).toEqual({});
     expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: directoriesToIgnore});
@@ -59,7 +60,10 @@ describe('ignore file lifter', () => {
   it('should ignore provided directories and `buildDirectory`', async () => {
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(false);
 
-    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}, buildDirectory});
+    const results = await liftIgnore(
+      {projectRoot, ignore: {directories: directoriesToIgnore}, buildDirectory},
+      {logger}
+    );
 
     expect(results).toEqual({});
     expect(writeIgnoreFile).toHaveBeenCalledWith({
@@ -73,7 +77,7 @@ describe('ignore file lifter', () => {
     when(ignoreFileExists).calledWith({projectRoot}).thenResolve(true);
     when(readIgnoreFile).calledWith({projectRoot}).thenResolve(existingIgnores);
 
-    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}});
+    const results = await liftIgnore({projectRoot, ignore: {directories: directoriesToIgnore}}, {logger});
 
     expect(results).toEqual({});
     expect(writeIgnoreFile).toHaveBeenCalledWith({projectRoot, ignores: [...existingIgnores, ...directoriesToIgnore]});

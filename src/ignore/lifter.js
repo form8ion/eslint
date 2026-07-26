@@ -1,14 +1,15 @@
-import {info} from '@travi/cli-messages';
-
 import readIgnoreFile from './reader.js';
 import writeIgnoreFile from './writer.js';
 import ignoreFileExists from './predicate.js';
 
-export default async function ({projectRoot, ignore: {directories: directoriesToIgnore = []} = {}, buildDirectory}) {
-  info('Lifting ESLint ignore definition', {level: 'secondary'});
+export default async function (
+  {projectRoot, ignore: {directories: directoriesToIgnore = []} = {}, buildDirectory},
+  {logger}
+) {
+  logger.info('Lifting ESLint ignore definition', {level: 'secondary'});
 
   if (!buildDirectory && !directoriesToIgnore.length) {
-    info('No additional ESLint ignores provided', {level: 'secondary'});
+    logger.info('No additional ESLint ignores provided', {level: 'secondary'});
 
     return {};
   }

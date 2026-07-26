@@ -2,10 +2,18 @@ import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {After, Before, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
+import createDebugFor from 'debug';
 
 let scaffold, lift, test;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
+const debug = createDebugFor('test:common-steps');
+const logger = {
+  success: debug,
+  info: debug,
+  warn: debug,
+  error: debug
+};
 
 Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
@@ -35,6 +43,6 @@ When('the project is lifted', async function () {
         eslint: {configs: this.additionalShareableConfigs, ignore: {directories: this.ignoredDirectories}},
         buildDirectory: this.buildDirectory
       }
-    });
+    }, {logger});
   }
 });

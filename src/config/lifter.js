@@ -1,6 +1,5 @@
 import {promises as fs} from 'fs';
 import {load} from 'js-yaml';
-import {info} from '@travi/cli-messages';
 
 import write from './writer.js';
 import extractScopeFrom from '../scope-extractor.js';
@@ -29,13 +28,13 @@ function noAdditionalConfigsWereProvided(configs) {
   return !configs || 0 === configs.length;
 }
 
-export default async function ({configs, projectRoot}) {
-  info('Lifting ESLint config', {level: 'secondary'});
+export default async function ({configs, projectRoot}, {logger}) {
+  logger.info('Lifting ESLint config', {level: 'secondary'});
 
   const pathToConfig = `${projectRoot}/.eslintrc.yml`;
 
   if (noAdditionalConfigsWereProvided(configs)) {
-    info('No additional ESLint configs provided', {level: 'secondary'});
+    logger.info('No additional ESLint configs provided', {level: 'secondary'});
 
     return {};
   }

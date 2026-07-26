@@ -9,6 +9,13 @@ stubbedFs();
 // #### Execute
 
 (async () => {
+  const logger = {
+    info: () => undefined,
+    success: () => undefined,
+    warn: () => undefined,
+    error: () => undefined
+  };
+
   await scaffold({projectRoot: process.cwd(), config: {scope: '@foo'}});
 
   await lift({
@@ -17,5 +24,5 @@ stubbedFs();
       eslint: {configs: ['mocha', 'react'], ignore: {directories: []}},
       buildDirectory: 'lib'
     }
-  });
+  }, {logger});
 })();
