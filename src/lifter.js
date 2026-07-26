@@ -3,7 +3,7 @@ import deepmerge from 'deepmerge';
 import {lift as liftConfig} from './config/index.js';
 import {lift as liftIgnore} from './ignore/index.js';
 
-export default async function (
+export default async function lift(
   {projectRoot, results: {buildDirectory, eslint: {configs = [], ignore = {}} = {}}},
   {logger}
 ) {

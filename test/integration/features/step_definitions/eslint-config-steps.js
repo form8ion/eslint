@@ -1,5 +1,5 @@
 import {promises as fs} from 'fs';
-import {dump, load} from 'js-yaml';
+import {stringify, parse} from 'yaml';
 import {Given, Then} from '@cucumber/cucumber';
 import {assert} from 'chai';
 import any from '@travi/any';
@@ -15,14 +15,14 @@ Given('no existing eslint config file is present', async function () {
 Given('an existing eslint config file is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
 
-  await fs.writeFile(pathToYamlConfig, dump({extends: eslintConfigScope}));
+  await fs.writeFile(pathToYamlConfig, stringify({extends: eslintConfigScope}));
 });
 
 Given('an existing eslint config file extending multiple configs is present', async function () {
   this.eslintConfigScope = eslintConfigScope;
   this.additionalExistingConfig = `${eslintConfigScope}/${any.word()}`;
 
-  await fs.writeFile(pathToYamlConfig, dump({extends: [eslintConfigScope, this.additionalExistingConfig]}));
+  await fs.writeFile(pathToYamlConfig, stringify({extends: [eslintConfigScope, this.additionalExistingConfig]}));
 });
 
 Given('an empty list of additional shareable configs is provided', async function () {
@@ -43,7 +43,7 @@ Given('some provided configs duplicate existing configs', async function () {
   this.additionalExistingConfig = `${eslintConfigScope}/${additionalConfigBase}`;
   this.additionalShareableConfigs = [additionalConfigBase, ...any.listOf(any.word)];
 
-  await fs.writeFile(pathToYamlConfig, dump({extends: [eslintConfigScope, this.additionalExistingConfig]}));
+  await fs.writeFile(pathToYamlConfig, stringify({extends: [eslintConfigScope, this.additionalExistingConfig]}));
 });
 
 Then('no eslint config file exists', async function () {
@@ -51,13 +51,13 @@ Then('no eslint config file exists', async function () {
 });
 
 Then('a yaml config file was created', async function () {
-  const config = load(await fs.readFile(pathToYamlConfig));
+  const config = parse(await fs.readFile(pathToYamlConfig, 'utf-8'));
 
   assert.deepEqual(config.extends, eslintConfigScope);
 });
 
 Then('the yaml eslint config file contains the expected config', async function () {
-  const config = load(await fs.readFile(pathToYamlConfig));
+  const config = parse(await fs.readFile(pathToYamlConfig, 'utf-8'));
 
   if (this.additionalExistingConfig) {
     assert.includeMembers(config.extends, [eslintConfigScope, this.additionalExistingConfig]);
@@ -88,7 +88,7 @@ Then('dependencies are defined for the additional configs', async function () {
 });
 
 Then('the yaml eslint config file is updated with the provided simple configs', async function () {
-  const config = load(await fs.readFile(pathToYamlConfig));
+  const config = parse(await fs.readFile(pathToYamlConfig, 'utf-8'));
 
   assert.includeMembers(
     config.extends,
@@ -97,7 +97,7 @@ Then('the yaml eslint config file is updated with the provided simple configs', 
 });
 
 Then('the yaml eslint config file is updated with the provided complex configs', async function () {
-  const config = load(await fs.readFile(pathToYamlConfig));
+  const config = parse(await fs.readFile(pathToYamlConfig, 'utf-8'));
 
   assert.includeMembers(
     config.extends,
@@ -106,7 +106,7 @@ Then('the yaml eslint config file is updated with the provided complex configs',
 });
 
 Then('there are no duplicates listed in the extended configs', async function () {
-  const config = load(await fs.readFile(pathToYamlConfig));
+  const config = parse(await fs.readFile(pathToYamlConfig, 'utf-8'));
 
   const counts = config.extends.reduce((acc, cfg) => ({...acc, [cfg]: [...acc[cfg] ? acc[cfg] : [], cfg]}), {});
   const countsHigherThanOne = Object.entries(counts).filter(([, list]) => 1 < list.length);

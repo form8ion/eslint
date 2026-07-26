@@ -1,6 +1,6 @@
 import {scaffold as scaffoldConfig} from './config/index.js';
 
-export default async function ({projectRoot, config: {scope}}) {
+export default async function scaffold({projectRoot, config: {scope}}) {
   await scaffoldConfig({projectRoot, scope});
 
   return {

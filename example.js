@@ -3,8 +3,11 @@
 import stubbedFs from 'mock-fs';
 import {lift, scaffold} from './lib/index.js';
 
-// remark-usage-ignore-next
-stubbedFs();
+// remark-usage-ignore-next 4
+stubbedFs({
+  node_modules: stubbedFs.load('node_modules'),
+  '.eslintrc.yml': 'extends: "@foo/eslint-config"'
+});
 
 // #### Execute
 

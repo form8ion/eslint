@@ -2,7 +2,7 @@ import readIgnoreFile from './reader.js';
 import writeIgnoreFile from './writer.js';
 import ignoreFileExists from './predicate.js';
 
-export default async function (
+export default async function liftIgnoreFile(
   {projectRoot, ignore: {directories: directoriesToIgnore = []} = {}, buildDirectory},
   {logger}
 ) {

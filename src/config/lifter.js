@@ -1,5 +1,4 @@
-import {promises as fs} from 'fs';
-import {load} from 'js-yaml';
+import {load} from '@form8ion/config-file';
 
 import write from './writer.js';
 import extractScopeFrom from '../scope-extractor.js';
@@ -28,10 +27,8 @@ function noAdditionalConfigsWereProvided(configs) {
   return !configs || 0 === configs.length;
 }
 
-export default async function ({configs, projectRoot}, {logger}) {
+export default async function liftConfig({configs, projectRoot}, {logger}) {
   logger.info('Lifting ESLint config', {level: 'secondary'});
-
-  const pathToConfig = `${projectRoot}/.eslintrc.yml`;
 
   if (noAdditionalConfigsWereProvided(configs)) {
     logger.info('No additional ESLint configs provided', {level: 'secondary'});
@@ -39,7 +36,7 @@ export default async function ({configs, projectRoot}, {logger}) {
     return {};
   }
 
-  const existingConfig = load(await fs.readFile(pathToConfig, 'utf-8'));
+  const existingConfig = await load({name: 'eslint'});
   const scope = extractScopeFrom(existingConfig);
   const mapConfigNameToPackageName = getConfigToPackageNameMapper(scope);
   const mapConfigBasenameToConfigShortName = getConfigBasenameToConfigShortNameMapper(scope);
