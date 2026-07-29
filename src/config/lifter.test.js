@@ -40,7 +40,7 @@ describe('config lifter', () => {
 
   it('should extend a single config by adding additional single configs & list dependencies', async () => {
     const configs = any.listOf(any.word);
-    when(load).calledWith({name: 'eslint'}).thenReturn(existingConfigWithSingleExistingConfig);
+    when(load).calledWith({name: 'eslint', projectRoot}).thenReturn(existingConfigWithSingleExistingConfig);
     when(extractScopeFrom).calledWith(existingConfigWithSingleExistingConfig).thenReturn(scope);
 
     const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
@@ -58,7 +58,7 @@ describe('config lifter', () => {
   it('should extend multipl configs by adding additional simple configs & list dependencies', async () => {
     const configsWithoutDuplicate = any.listOf(any.word);
     const configs = [...configsWithoutDuplicate, duplicateConfig];
-    when(load).calledWith({name: 'eslint'}).thenReturn(existingConfigWithMultipleExistingConfigs);
+    when(load).calledWith({name: 'eslint', projectRoot}).thenReturn(existingConfigWithMultipleExistingConfigs);
     when(extractScopeFrom).calledWith(existingConfigWithMultipleExistingConfigs).thenReturn(scope);
 
     const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
@@ -78,7 +78,7 @@ describe('config lifter', () => {
 
   it('should extend mutliple configs by adding complex configs & list dependencies', async () => {
     const configs = any.listOf(() => ({...any.simpleObject(), name: any.word()}));
-    when(load).calledWith({name: 'eslint'}).thenReturn(existingConfigWithMultipleExistingConfigs);
+    when(load).calledWith({name: 'eslint', projectRoot}).thenReturn(existingConfigWithMultipleExistingConfigs);
     when(extractScopeFrom).calledWith(existingConfigWithMultipleExistingConfigs).thenReturn(scope);
 
     const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
@@ -98,7 +98,7 @@ describe('config lifter', () => {
 
   it('should add `overrides` to the config when configs with file patterns defined are provided', async () => {
     const configs = any.listOf(() => ({...any.simpleObject(), name: any.word(), files: any.string()}));
-    when(load).calledWith({name: 'eslint'}).thenReturn(existingConfigWithSingleExistingConfig);
+    when(load).calledWith({name: 'eslint', projectRoot}).thenReturn(existingConfigWithSingleExistingConfig);
     when(extractScopeFrom).calledWith(existingConfigWithSingleExistingConfig).thenReturn(scope);
 
     const {dependencies} = await liftEslint({configs, projectRoot}, {logger});
@@ -124,7 +124,7 @@ describe('config lifter', () => {
       overrides: any.listOf(() => ({extends: any.word(), files: any.string()}))
     };
     const configs = any.listOf(() => ({...any.simpleObject(), name: any.word(), files: any.string()}));
-    when(load).calledWith({name: 'eslint'}).thenReturn(existingConfigWithOverrides);
+    when(load).calledWith({name: 'eslint', projectRoot}).thenReturn(existingConfigWithOverrides);
     when(extractScopeFrom).calledWith(existingConfigWithOverrides).thenReturn(scope);
 
     const {dependencies} = await liftEslint({configs, projectRoot}, {logger});

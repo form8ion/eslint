@@ -36,7 +36,7 @@ export default async function liftConfig({configs, projectRoot}, {logger}) {
     return {};
   }
 
-  const existingConfig = await load({name: 'eslint'});
+  const existingConfig = await load({name: 'eslint', projectRoot});
   const scope = extractScopeFrom(existingConfig);
   const mapConfigNameToPackageName = getConfigToPackageNameMapper(scope);
   const mapConfigBasenameToConfigShortName = getConfigBasenameToConfigShortNameMapper(scope);
