@@ -93,6 +93,6 @@
     "rollup-plugin-auto-external": "2.0.0",
     "vitest": "5.0.0",
     "vitest-when": "1.0.0",
-    "yaml": "2.9.0"
+    "yaml": "2.9.1"
   }
 }
